@@ -178,8 +178,7 @@ export async function leesBackup(bestand) {
 function schoonProfiel(p) {
   if (!p || typeof p !== 'object') return null;
   const tekst = (v) => (typeof v === 'string' ? v : '');
-  const profiel = { naam: tekst(p.naam), overMij: tekst(p.overMij), lezersprofiel: tekst(p.lezersprofiel) };
-  if (/^\d{4}-\d{2}$/.test(p.statsVanaf)) profiel.statsVanaf = p.statsVanaf;
+  const profiel = { naam: tekst(p.naam) };
   // Antwoorden van het welkomstscherm.
   const lijst = (v, mag) => (Array.isArray(v) ? v.filter((x) => mag.includes(x)) : []);
   profiel.leesvormen = lijst(p.leesvormen, Object.keys(LEESVORMEN));
@@ -229,7 +228,7 @@ export async function zetBackupTerug(inhoud) {
     await db.boeken.bulkAdd(boeken);
     // Een oudere backup zonder profiel laat het huidige profiel staan.
     // Wie een backup terugzet, hoeft het welkomstscherm niet meer te zien.
-    const nu = profiel ?? (await db.instellingen.get('profiel'))?.waarde ?? { naam: '', overMij: '', lezersprofiel: '' };
+    const nu = profiel ?? (await db.instellingen.get('profiel'))?.waarde ?? { naam: '' };
     await db.instellingen.put({ sleutel: 'profiel', waarde: { ...nu, welkomKlaar: true } });
     if (reacties) await db.instellingen.put({ sleutel: 'tipReacties', waarde: reacties });
     // Een backup zonder foto laat de huidige foto staan.

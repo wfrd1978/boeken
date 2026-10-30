@@ -295,7 +295,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 #melding button { border: 0; background: none; color: var(--bg); font-weight: 700; padding: 0; text-decoration: underline; }
 
-
 /* --- Scannen --- */
 .scan-knop { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 4px; }
 .scan-knop svg { width: 22px; height: 22px; fill: currentColor; }
@@ -432,21 +431,7 @@ button.rij-boek { border: 0; background: none; padding: 0; text-align: left; fon
 .tip-kobo { display: block; text-align: center; margin: 6px auto 0; }
 
 /* Statistieken op de profielpagina */
-.statistieken { margin: 8px 0 28px; }
-.tegels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.tegel { background: var(--vlak); border: 1px solid var(--lijn); border-radius: 12px; padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; }
-.tegel strong { font-family: var(--schreef); font-size: 1.7rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.tegel strong small { font-size: 0.9rem; color: var(--zacht); margin-left: 2px; }
-.tegel span { color: var(--zacht); font-size: 0.85rem; }
 .stat-kop { font-size: 1.05rem; margin: 24px 0 10px; }
-.staven { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
-.staven li { display: grid; grid-template-columns: minmax(0, 11rem) 1fr auto; align-items: center; gap: 10px; font-size: 0.9rem; }
-.staaf-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.staaf { height: 8px; }
-.staaf span { display: block; height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; }
-.staaf-aantal { font-variant-numeric: tabular-nums; text-align: right; min-width: 2ch; }
-.stat-vanaf { display: flex; align-items: center; gap: 10px; margin-top: 20px; color: var(--zacht); font-size: 0.9rem; }
-.stat-vanaf input { font-size: 16px; padding: 6px 10px; border: 1px solid var(--lijn); border-radius: 8px; background: var(--vlak); color: var(--tekst); }
 
 /* Tips op de Toevoegen-pagina */
 .toevoeg-tips { margin-top: 28px; }
@@ -476,11 +461,8 @@ button.rij-boek { border: 0; background: none; padding: 0; text-align: left; fon
 .over-app summary { cursor: pointer; font-weight: 600; color: var(--tekst); }
 .over-app details p { color: var(--zacht); margin: 10px 0 0; line-height: 1.5; }
 
-/* Hulp bij de recensie */
+/* Recensie: regel met "Opgeslagen" */
 .recensie-regel { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.recensie-regel .link-knop { padding: 10px 0; }
-#hulp-laag .hoofdknop, #hulp-laag .tweede-knop { margin-top: 18px; width: 100%; }
-#hulp-laag .veld { margin-top: 16px; }
 
 /* Covers nalopen */
 .nalopen-regel { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--lijn); }
@@ -528,10 +510,6 @@ button.rij-boek { border: 0; background: none; padding: 0; text-align: left; fon
 .keuze[data-c] { border-color: color-mix(in srgb, var(--c) 45%, var(--lijn)); }
 .keuze[data-c].actief { background: var(--c); border-color: var(--c); color: #fff; }
 
-/* Profielstatistieken: eerste tegel in het accent. */
-.tegel:first-child { background: var(--accent); border-color: var(--accent); }
-.tegel:first-child strong, .tegel:first-child span { color: var(--accent-tekst); }
-
 /* --- Iets stoerder: diep groen als grote vlakken, goud als accent --- */
 
 /* Woordmerk in het groen met een gouden streep eronder. */
@@ -562,11 +540,6 @@ button.rij-boek { border: 0; background: none; padding: 0; text-align: left; fon
 .tab { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--lijn); margin-bottom: 0; }
 .tab.actief { background: var(--diep); border-color: var(--diep); color: var(--diep-tekst); }
 .balk a.actief { background: var(--diep); color: var(--diep-tekst); }
-
-/* Statistieken: groen, goud en licht. */
-.tegel:first-child { background: var(--diep); border-color: var(--diep); }
-.tegel:first-child strong, .tegel:first-child span { color: var(--diep-tekst); }
-.tegel:nth-child(2) { background: var(--geel); border-color: color-mix(in srgb, var(--goud) 35%, var(--lijn)); }
 
 /* Nieuws: de bron in het groen. */
 .nieuws-kop { color: var(--accent); }

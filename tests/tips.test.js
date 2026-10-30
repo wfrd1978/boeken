@@ -25,6 +25,11 @@ describe('tips ordenen naar smaak', () => {
     const score = smaak({}, [{ sterren: 5, categorie: 'Thriller & spanning' }]);
     expect(ordenTips(tips, score)[0].id).toBe('c');
   });
+
+  it('gekozen categorieën uit het profiel komen vooraan, ook boven één afwijzing', () => {
+    const score = smaak({ y: { reactie: 'nee', categorie: 'Roman & humor', soort: 'nieuw' } }, [], ['Roman & humor', 'Thriller & spanning']);
+    expect(ordenTips(tips, score).map((t) => t.id)).toEqual(['c', 'a', 'd', 'b']);
+  });
 });
 
 import { normaliseerTip } from '../src/tips.js';
@@ -39,5 +44,12 @@ describe('tips controleren', () => {
     expect(normaliseerTip({ id: 'x' })).toBeNull();
     expect(normaliseerTip({ titel: 'Boek' })).toBeNull();
     expect(normaliseerTip(null)).toBeNull();
+  });
+});
+
+describe('tips voor Kobo Plus', () => {
+  it('herkent de soort koboplus en maakt een onbekende soort gewoon nieuw', () => {
+    expect(normaliseerTip({ id: 'k', titel: 'Boek', soort: 'koboplus' }).soort).toBe('koboplus');
+    expect(normaliseerTip({ id: 'k', titel: 'Boek', soort: 'raar' }).soort).toBe('nieuw');
   });
 });

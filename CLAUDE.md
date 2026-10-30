@@ -30,14 +30,22 @@ Beide apps staan op wfrd1978.github.io en delen dus dezelfde browseropslag. Daar
 - eigen service-worker-opslag: namen beginnen met `deel-`, en de app ruimt alleen `deel-…` op;
 - nieuws en reeksen komen uit de boeken-app (`/boeken-app/nieuws.json`, `/boeken-app/reeksen.json`): die zijn algemeen, zo is er één dagelijkse taak.
 
+## Tiplijst (`public/tips.json`)
+
+Eén algemene lijst voor iedereen. Velden zoals in de boeken-app, met `soort`: `nieuw`, `parel` of `koboplus`.
+De telefoon kiest zelf: tips uit de categorieën in het profiel vooraan, boeken die je al hebt vallen weg.
+`koboplus`-tips staan in een eigen rij en alleen bij wie Kobo Plus heeft. Kobo blokkeert automatisch
+controleren; neem alleen titels op die een uitgever, boekhandel of Kobo zelf als nieuw in Kobo Plus noemt,
+en zet de bron in `reden`. Verzin geen samenvattingen: liever geen `synopsis` (de app haalt die zelf op).
+
 ## Stappenplan
 
 | Stap | Resultaat om te testen |
 |------|------------------------|
 | 1 | ~~Kopie online op wfrd1978.github.io/boeken, naast de boeken-app~~ — getest en klaar (30 okt) |
 | 2 | ~~Welkomstscherm in vier stappen: naam en foto (niet verplicht), hoe je leest, e-reader en Kobo Plus, favoriete categorieën~~ — getest en klaar (30 okt) |
-| 3 | Opruimen: profiel alleen naam en foto; recensiehulp, Excel-import en statistieken eruit; teksten herschreven |
-| 4 | Tips per persoon gekozen uit één algemene lijst, plus rij 'Nieuw in Kobo Plus' |
+| 3 | ~~Opruimen: profiel alleen naam en foto; recensiehulp, Excel-import en statistieken eruit; teksten herschreven~~ — getest en klaar (30 okt) |
+| 4 | Tips per persoon gekozen uit één algemene lijst, plus rij 'Nieuw in Kobo Plus'; Kobo-onderdelen alleen bij een e-reader, Kobo Plus-onderdelen alleen bij Kobo Plus |
 | 5 | Eigen Google-sleutel, beperkt tot wfrd1978.github.io/boeken |
 | 6 | Wekelijkse taak voor de algemene tips (`tips.json`), met proefrun |
 | 7 | Delen met een proefgroep van twee of drie mensen |

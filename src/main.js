@@ -326,6 +326,16 @@ const BEZIT = {
   papier: { veld: 'papierGekocht', naam: 'Papieren boek gekocht' },
 };
 
+// Het profiel van deze gebruiker, bij elke schermwissel vers gelezen. Kobo-onderdelen zie je
+// alleen als je een e-reader hebt; wat over Kobo Plus gaat alleen als je Kobo Plus hebt.
+let mijnProfiel = {};
+const metKobo = () => mijnProfiel.ereader === true;
+const metKoboPlus = () => metKobo() && mijnProfiel.koboPlus === true;
+
+function zichtbaarBezit() {
+  return Object.entries(BEZIT).filter(([k]) => (k === 'kobo' ? metKoboPlus() : k === 'gedownload' ? metKobo() : true));
+}
+
 // Zoekterm, tab en sortering blijven bewaard als je een boek opent en terugkomt.
 let zoekterm = '';
 let sortering = 'toegevoegd';
@@ -648,7 +658,7 @@ function startHtml(boeken, naam) {
   return `
     <section class="start">
       <p class="groet">${veilig(deel)}<span>${datum}</span></p>
-      ${koboSeintjeHtml(boeken)}
+      ${metKoboPlus() ? koboSeintjeHtml(boeken) : ''}
       ${
         nu.length
           ? `<div class="helden${nu.length > 1 ? ' meer' : ''}">${nu.map(heldHtml).join('')}</div>`
@@ -715,7 +725,7 @@ async function toonLijst() {
                    <option value="">Alles</option>
                    ${CATEGORIEEN.map((c) => `<option value="${veilig(c)}"${c === toon ? ' selected' : ''}>${veilig(c)}</option>`).join('')}
                    <option value="geen"${toon === 'geen' ? ' selected' : ''}>Nog geen categorie</option>
-                   ${Object.entries(BEZIT).map(([k, x]) => `<option value="${k}"${toon === k ? ' selected' : ''}>${x.naam}</option>`).join('')}
+                   ${zichtbaarBezit().map(([k, x]) => `<option value="${k}"${toon === k ? ' selected' : ''}>${x.naam}</option>`).join('')}
                  </select>
                </label>
                <span class="aantal" id="aantal"></span>
@@ -913,11 +923,12 @@ function overDezeAppHtml() {
       </details>
       <details>
         <summary>Hoe leren de tips?</summary>
-        <p>Elke week komen er 16 tips; je ziet er 8 tegelijk. Kies je Wil ik lezen of Al gelezen, dan komen tips uit die categorie hoger. Niet voor mij laat ze zakken. Je vijfsterrenboeken tellen een beetje mee.</p>
+        <p>Elke week komt er een nieuwe lijst tips; je ziet er 8 tegelijk. Tips uit de categorieën die je in je profiel koos, staan vooraan. Kies je Wil ik lezen of Al gelezen, dan komen tips uit die categorie hoger. Niet voor mij laat ze zakken. Je vijfsterrenboeken tellen een beetje mee.</p>
+        ${metKoboPlus() ? '<p>Omdat je Kobo Plus hebt, zie je ook de rij Nieuw in Kobo Plus. Die titels komen uit berichten van uitgevers en boekhandels; de app kan Kobo zelf niet controleren, dus kijk even in de Kobo-app.</p>' : ''}
       </details>
       <details>
         <summary>Wat kan de app niet?</summary>
-        <p>Er is geen koppeling met je Kobo of Kobo Plus: daar biedt Kobo geen mogelijkheid voor. Wel kun je een boek markeren als Wacht op Kobo Plus en het met één tik opzoeken bij Kobo. Eens per maand geeft de app een seintje voor de Kobo-check: een lijst van al die boeken, zodat je snel ziet wat er nu te downloaden is. Automatisch kijken kan niet, omdat Kobo dat blokkeert.</p>
+        ${metKobo() ? '<p>Er is geen koppeling met je Kobo of Kobo Plus: daar biedt Kobo geen mogelijkheid voor. Wel kun je een boek markeren als Wacht op Kobo Plus en het met één tik opzoeken bij Kobo. Eens per maand geeft de app een seintje voor de Kobo-check: een lijst van al die boeken, zodat je snel ziet wat er nu te downloaden is. Automatisch kijken kan niet, omdat Kobo dat blokkeert.</p>' : ''}
         <p>Er is geen automatische backup naar de cloud: een backup maak je zelf. Na 7 dagen herinnert de app je eraan, of eerder als je sinds je laatste backup tien boeken hebt toegevoegd of bijgewerkt.</p>
         <p>Je boeken staan niet op meerdere apparaten tegelijk. Op een nieuwe telefoon zet je een backup terug.</p>
       </details>
@@ -970,11 +981,15 @@ async function toonInstellingen() {
       </details>
     </section>
 
-    <section class="blok">
+    ${
+      metKoboPlus()
+        ? `<section class="blok">
       <h2>Kobo-check</h2>
       <p>Eens per maand loop je na welke boeken die wachten op Kobo Plus nu te downloaden zijn. Je krijgt daarvoor een seintje op het startscherm.</p>
       <a class="tweede-knop" href="#/kobo">Open de Kobo-check</a>
-    </section>
+    </section>`
+        : ''
+    }
 
     <section class="blok">
       <h2>Weergave</h2>
@@ -1190,9 +1205,9 @@ function toonToevoegen() {
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h2v14H3zM7 5h1v14H7zM10 5h2v14h-2zM14 5h1v14h-1zM17 5h1v14h-1zM20 5h1v14h-1z" /></svg>
       Scan streepjescode
     </button>
-    <p class="of">of zoek op titel, auteur of ISBN, of plak een Kobo-link</p>
+    <p class="of">of zoek op titel, auteur of ISBN${metKobo() ? ', of plak een Kobo-link' : ''}</p>
     <form class="zoekbalk" id="zoekform">
-      <input id="zoekveld" type="search" enterkeyhint="search" placeholder="Titel, auteur, ISBN of Kobo-link" value="${veilig(laatsteZoekterm)}" autocomplete="off" />
+      <input id="zoekveld" type="search" enterkeyhint="search" placeholder="${metKobo() ? 'Titel, auteur, ISBN of Kobo-link' : 'Titel, auteur of ISBN'}" value="${veilig(laatsteZoekterm)}" autocomplete="off" />
       <button type="submit">Zoek</button>
     </form>
     <a class="meerdere-link" href="#/meerdere">
@@ -2093,21 +2108,9 @@ async function tipCover(tip) {
   return coverUrl || '';
 }
 
-// Eerst de tips die het toestel al heeft (meteen, zodat het scherm niet verspringt),
-// daarna op de achtergrond kijken of er een nieuwe ronde is.
-async function toonTipsRij(boeken, verversen = true) {
-  const vak = document.getElementById('tips-rij');
-  if (!vak) return;
-  const tips = await tipsUitArchief(boeken);
-  if (verversen) {
-    verversTips().then((veranderd) => {
-      if (veranderd && document.body.contains(vak)) toonTipsRij(boeken, false);
-    });
-  }
-  if (!tips.length || !document.body.contains(vak)) return;
-  vak.hidden = false;
-  vak.innerHTML = `
-    <div class="rij-kop"><h2>Tips voor jou</h2></div>
+function tipRijHtml(kop, tips) {
+  return `
+    <div class="rij-kop"><h2>${kop}</h2></div>
     <div class="rij-covers">
       ${tips
         .map(
@@ -2120,12 +2123,36 @@ async function toonTipsRij(boeken, verversen = true) {
         )
         .join('')}
     </div>`;
+}
+
+// Eerst de tips die het toestel al heeft (meteen, zodat het scherm niet verspringt),
+// daarna op de achtergrond kijken of er een nieuwe ronde is.
+// Wie Kobo Plus heeft, krijgt er een tweede rij bij: nieuwe e-books in Kobo Plus.
+async function toonTipsRij(boeken, verversen = true) {
+  const vak = document.getElementById('tips-rij');
+  if (!vak) return;
+  const lievelingen = mijnProfiel.categorieen ?? [];
+  const [tips, koboTips] = await Promise.all([
+    tipsUitArchief(boeken, { lievelingen }),
+    metKoboPlus() ? tipsUitArchief(boeken, { lievelingen, koboPlus: true }) : [],
+  ]);
+  if (verversen) {
+    verversTips().then((veranderd) => {
+      if (veranderd && document.body.contains(vak)) toonTipsRij(boeken, false);
+    });
+  }
+  if ((!tips.length && !koboTips.length) || !document.body.contains(vak)) return;
+  vak.hidden = false;
+  vak.innerHTML = [tips.length && tipRijHtml('Tips voor jou', tips), koboTips.length && tipRijHtml('Nieuw in Kobo Plus', koboTips)]
+    .filter(Boolean)
+    .join('');
+  const alle = [...tips, ...koboTips];
   vak.onclick = (e) => {
     const knop = e.target.closest('[data-tip]');
-    if (knop) toonTip(tips.find((t) => t.id === knop.dataset.tip), boeken);
+    if (knop) toonTip(alle.find((t) => t.id === knop.dataset.tip), boeken);
   };
   // Covers één voor één erbij zetten, zonder het scherm op te houden.
-  vulTipCovers(vak, tips);
+  vulTipCovers(vak, alle);
 }
 
 async function vulTipCovers(vak, tips, klasse = 'rij-cover') {
@@ -2144,7 +2171,7 @@ function toonTip(tip, boeken, opnieuw = herteken) {
     'beforeend',
     `<div class="laag" id="tip-laag">
        <div class="laag-blad tip-blad">
-         <div class="laag-kop"><span class="status status-1">${tip.soort === 'parel' ? 'Parel die je misschien gemist hebt' : 'Nieuw verschenen'}</span><button class="link-knop" id="laag-sluit">Sluiten</button></div>
+         <div class="laag-kop"><span class="status status-1">${{ parel: 'Parel die je misschien gemist hebt', koboplus: 'Nieuw in Kobo Plus' }[tip.soort] ?? 'Nieuw verschenen'}</span><button class="link-knop" id="laag-sluit">Sluiten</button></div>
          <div class="tip-boven">
            ${veiligeUrl(tip.coverUrl) ? `<img class="held-cover" src="${veilig(veiligeUrl(tip.coverUrl))}" alt="" />` : `<div class="held-cover geen-cover">${veilig(tip.titel.charAt(0))}</div>`}
            <div>
@@ -2153,13 +2180,14 @@ function toonTip(tip, boeken, opnieuw = herteken) {
            </div>
          </div>
          <p class="tip-reden">${veilig(tip.reden)}</p>
+         ${tip.soort === 'koboplus' ? '<p class="zacht klein">Kobo Plus wisselt soms van aanbod. Kijk in de Kobo-app of het boek er nog in staat.</p>' : ''}
          ${tip.synopsis ? `<div class="synopsis">${synopsisHtml(tip.synopsis)}</div>` : ''}
          <button class="hoofdknop" data-reactie="wil">Wil ik lezen</button>
          <div class="tip-knoppen">
            <button class="tweede-knop" data-reactie="gelezen">Al gelezen</button>
            <button class="tweede-knop" data-reactie="nee">Niet voor mij</button>
          </div>
-         <a class="link-knop tip-kobo" href="${koboZoekUrl(tip)}" target="_blank" rel="noopener">Zoek bij Kobo ↗</a>
+         ${metKobo() ? `<a class="link-knop tip-kobo" href="${koboZoekUrl(tip)}" target="_blank" rel="noopener">Zoek bij Kobo ↗</a>` : ''}
        </div>
      </div>`
   );
@@ -2229,7 +2257,7 @@ async function toonToevoegTips(verversen = true) {
   const vak = document.getElementById('toevoeg-tips');
   if (!vak) return;
   const boeken = await alleBoeken();
-  const tips = await tipsUitArchief(boeken);
+  const tips = await tipsUitArchief(boeken, { lievelingen: mijnProfiel.categorieen ?? [] });
   if (verversen) {
     verversTips().then((veranderd) => {
       if (veranderd && document.body.contains(vak)) toonToevoegTips(false);
@@ -2551,14 +2579,18 @@ async function toonBoek(id) {
       <div class="keuzes" id="categorieen">${categorieKnoppen()}</div>
 
       <div id="kobo-blok">
-      <p class="label">Kobo en boek</p>
+      <p class="label">${metKobo() ? 'Kobo en boek' : 'Gekocht'}</p>
       <div class="keuzes" id="bezit">
-        ${Object.values(BEZIT).map((x) => `<button class="keuze${boek[x.veld] ? ' actief' : ''}" data-veld="${x.veld}">${x.naam}</button>`).join('')}
+        ${zichtbaarBezit().map(([, x]) => `<button class="keuze${boek[x.veld] ? ' actief' : ''}" data-veld="${x.veld}">${x.naam}</button>`).join('')}
       </div>
-      <a class="kobo-zoek" href="${koboZoekUrl(boek)}" target="_blank" rel="noopener">
+      ${
+        metKobo()
+          ? `<a class="kobo-zoek" href="${koboZoekUrl(boek)}" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 1 0 3.7 10.7l4.8 4.8 1.4-1.4-4.8-4.8A6 6 0 0 0 10 4zm0 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8z" /></svg>
         Zoek dit boek bij Kobo ↗
-      </a>
+      </a>`
+          : ''
+      }
       </div>
 
       <button class="verwijder" id="verwijder">Boek verwijderen</button>
@@ -2858,6 +2890,7 @@ async function route({ naarBoven = false } = {}) {
   // Eerste keer: eerst het welkomstscherm. Instellingen blijft bereikbaar om een backup terug te zetten.
   document.body.classList.remove('welkom-bezig');
   if (location.hash !== '#/instellingen' && (await moetWelkom())) return toonWelkom();
+  mijnProfiel = await haalProfiel();
   const boekId = location.hash.match(/^#\/boek\/(\d+)$/);
   const plek = { '#/toevoegen': 'toevoegen', '#/meerdere': 'toevoegen', '#/instellingen': 'instellingen', '#/covers': 'instellingen', '#/zoek': 'zoek' }[location.hash] || 'lijst';
   document.querySelectorAll('.balk a').forEach((a) => a.classList.toggle('actief', a.dataset.plek === plek));

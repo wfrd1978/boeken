@@ -39,9 +39,11 @@ const MAX_ZICHTBAAR = 8;
 
 // Wat slaat aan? Wil ik lezen telt het zwaarst, Niet voor mij telt negatief.
 // Je vijfsterrenboeken tellen een beetje mee voor hun categorie.
+// De categorieën die je in je profiel koos, wegen het zwaarst: die tips komen vooraan.
 const GEWICHT = { wil: 2, gelezen: 1, nee: -2 };
+const LIEVELING = 3;
 
-export function smaak(reacties, boeken = []) {
+export function smaak(reacties, boeken = [], lievelingen = []) {
   const score = {};
   const tel = (sleutel, punten) => {
     if (sleutel) score[sleutel] = (score[sleutel] ?? 0) + punten;
@@ -51,6 +53,7 @@ export function smaak(reacties, boeken = []) {
     tel(r.soort && `s:${r.soort}`, (GEWICHT[r.reactie] ?? 0) / 2);
   }
   for (const b of boeken) if (b.sterren === 5) tel(b.categorie && `c:${b.categorie}`, 0.3);
+  for (const c of lievelingen) tel(`c:${c}`, LIEVELING);
   return score;
 }
 
@@ -71,7 +74,7 @@ export function normaliseerTip(t) {
   const tekst = (v) => (typeof v === 'string' ? v : undefined);
   return {
     id: t.id,
-    soort: t.soort === 'parel' ? 'parel' : 'nieuw',
+    soort: ['parel', 'koboplus'].includes(t.soort) ? t.soort : 'nieuw',
     titel: t.titel.trim(),
     auteurs: Array.isArray(t.auteurs) ? t.auteurs.filter((a) => typeof a === 'string') : typeof t.auteurs === 'string' ? [t.auteurs] : [],
     isbn: tekst(t.isbn),
@@ -113,10 +116,14 @@ async function bewaarArchief(ruw, bijwerkingen = []) {
 
 // Tips zonder reactie en zonder boek dat al in de lijst staat (ook niet als vertaling),
 // uit wat het toestel al heeft: direct beschikbaar, zonder te wachten op internet.
-export async function tipsUitArchief(boeken) {
+// Gewone tips en die voor Kobo Plus (soort 'koboplus') staan in aparte rijen.
+export async function tipsUitArchief(boeken, { lievelingen = [], koboPlus = false } = {}) {
   const [archief, reacties] = await Promise.all([db.instellingen.get('tipArchief'), tipReacties()]);
   const open = (archief?.waarde ?? []).map(normaliseerTip).filter((t) => t && !reacties[t.id] && !vindDubbel(t, boeken));
-  return ordenTips(open, smaak(reacties, boeken)).slice(0, MAX_ZICHTBAAR);
+  return ordenTips(
+    open.filter((t) => (t.soort === 'koboplus') === koboPlus),
+    smaak(reacties, boeken, lievelingen)
+  ).slice(0, MAX_ZICHTBAAR);
 }
 
 // Haalt de nieuwste ronde op en bewaart nieuwe of verbeterde tips (bijvoorbeeld met een cover).

@@ -1,5 +1,5 @@
 // Backup: alle boeken (met covers) in één JSON-bestand, en weer terugzetten.
-import { db, normaliseerBoek, WIJZIGINGEN } from './db.js';
+import { db, normaliseerBoek, WIJZIGINGEN, CATEGORIEEN, LEESVORMEN } from './db.js';
 import { stopAchtergrond } from './verrijken.js';
 import { normaliseerTip } from './tips.js';
 import { normaliseerBericht } from './nieuws.js';
@@ -180,6 +180,12 @@ function schoonProfiel(p) {
   const tekst = (v) => (typeof v === 'string' ? v : '');
   const profiel = { naam: tekst(p.naam), overMij: tekst(p.overMij), lezersprofiel: tekst(p.lezersprofiel) };
   if (/^\d{4}-\d{2}$/.test(p.statsVanaf)) profiel.statsVanaf = p.statsVanaf;
+  // Antwoorden van het welkomstscherm.
+  const lijst = (v, mag) => (Array.isArray(v) ? v.filter((x) => mag.includes(x)) : []);
+  profiel.leesvormen = lijst(p.leesvormen, Object.keys(LEESVORMEN));
+  profiel.categorieen = lijst(p.categorieen, CATEGORIEEN);
+  if (typeof p.ereader === 'boolean') profiel.ereader = p.ereader;
+  if (typeof p.koboPlus === 'boolean') profiel.koboPlus = p.koboPlus;
   return profiel;
 }
 
@@ -222,7 +228,9 @@ export async function zetBackupTerug(inhoud) {
     await db.boeken.clear();
     await db.boeken.bulkAdd(boeken);
     // Een oudere backup zonder profiel laat het huidige profiel staan.
-    if (profiel) await db.instellingen.put({ sleutel: 'profiel', waarde: profiel });
+    // Wie een backup terugzet, hoeft het welkomstscherm niet meer te zien.
+    const nu = profiel ?? (await db.instellingen.get('profiel'))?.waarde ?? { naam: '', overMij: '', lezersprofiel: '' };
+    await db.instellingen.put({ sleutel: 'profiel', waarde: { ...nu, welkomKlaar: true } });
     if (reacties) await db.instellingen.put({ sleutel: 'tipReacties', waarde: reacties });
     // Een backup zonder foto laat de huidige foto staan.
     if (foto) await db.instellingen.put({ sleutel: 'profielFoto', waarde: foto });

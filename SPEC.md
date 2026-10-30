@@ -12,3 +12,4 @@ en verfilmingen uit Wikipedia en Wikidata. Alles gratis.
 | 30 okt 2026 | Eigen database, voorkeuren en opslag, zodat beide apps op hetzelfde adres elkaar niet raken |
 | 30 okt 2026 | Nieuws en reeksen uit de boeken-app (algemeen); tips krijgen een eigen algemene lijst (nu nog leeg) |
 | 30 okt 2026 | Backups heten `app: 'boeken'`; een backup van de boeken-app kan ook worden teruggezet |
+| 30 okt 2026 | Welkomstscherm bij de eerste keer openen: naam en foto (niet verplicht), hoe je leest, e-reader en Kobo Plus, favoriete categorieën. Bewaard in het profiel (`leesvormen`, `ereader`, `koboPlus`, `categorieen`, `welkomKlaar`) en dus in de backup; wie een backup terugzet, slaat het welkomstscherm over |

@@ -34,7 +34,7 @@ Beide apps staan op wfrd1978.github.io en delen dus dezelfde browseropslag. Daar
 
 | Stap | Resultaat om te testen |
 |------|------------------------|
-| 1 | Kopie online op wfrd1978.github.io/boeken, naast de boeken-app |
+| 1 | ~~Kopie online op wfrd1978.github.io/boeken, naast de boeken-app~~ — getest en klaar (30 okt) |
 | 2 | Welkomstscherm in vier stappen: naam en foto (niet verplicht), hoe je leest, e-reader en Kobo Plus, favoriete categorieën |
 | 3 | Opruimen: profiel alleen naam en foto; recensiehulp, Excel-import en statistieken eruit; teksten herschreven |
 | 4 | Tips per persoon gekozen uit één algemene lijst, plus rij 'Nieuw in Kobo Plus' |

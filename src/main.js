@@ -1875,6 +1875,136 @@ function statistiekenHtml(st, vanaf) {
     </section>`;
 }
 
+// --- Welkom ---
+
+// Bij de eerste keer openen: vier korte vragen. De antwoorden staan in het profiel (op de telefoon
+// en in de backup) en zijn later te wijzigen. Elke stap wordt meteen bewaard.
+let welkomGedaan = false;
+
+async function moetWelkom() {
+  if (welkomGedaan) return false;
+  welkomGedaan = Boolean((await haalProfiel()).welkomKlaar);
+  return !welkomGedaan;
+}
+
+const WELKOM_STAPPEN = 4;
+
+async function toonWelkom(stap = 1) {
+  const nr = schermNr;
+  const [profiel, foto] = await Promise.all([haalProfiel(), profielFotoAdres()]);
+  if (nr !== schermNr) return;
+  document.body.classList.add('welkom-bezig');
+  const vormen = profiel.leesvormen ?? [];
+  const lievelingen = profiel.categorieen ?? [];
+  const knoppen = (lijst, gekozen, attr) =>
+    lijst.map(([k, naam]) => `<button class="keuze${gekozen.includes(k) ? ' actief' : ''}" data-${attr}="${veilig(k)}">${veilig(naam)}</button>`).join('');
+  const jaNee = (id, waarde) => `
+    <div class="keuzes" id="${id}">
+      <button class="keuze${waarde === true ? ' actief' : ''}" data-ja="1">Ja</button>
+      <button class="keuze${waarde === false ? ' actief' : ''}" data-ja="0">Nee</button>
+    </div>`;
+  const inhoud = {
+    1: `
+      <h1>Welkom bij Boeken</h1>
+      <p>Houd bij wat je leest, bewaar je eigen oordeel en krijg tips voor je volgende boek. Alles blijft op je eigen telefoon.</p>
+      <label class="veld">Hoe heet je?<input id="w-naam" value="${veilig(profiel.naam)}" placeholder="Je voornaam" autocomplete="given-name" /></label>
+      <div class="welkom-foto">
+        <label class="profiel-foto-kiezen" aria-label="Kies een foto">
+          <span>${avatarHtml('profiel-groot', profiel, foto, '?')}</span>
+          <input type="file" accept="image/*" id="w-foto" hidden />
+        </label>
+        <div>
+          <label class="link-knop" for="w-foto">${foto ? 'Andere foto' : 'Foto toevoegen'}</label>
+          <p class="zacht">Niet verplicht.</p>
+        </div>
+      </div>`,
+    2: `
+      <h1>Hoe lees je?</h1>
+      <p>Kies er een of meer. Bij elk boek kun je later aangeven hoe je het las.</p>
+      <div class="keuzes" id="w-vormen">${knoppen(Object.entries(LEESVORMEN), vormen, 'vorm')}</div>`,
+    3: `
+      <h1>Lees je op een e&#8209;reader?</h1>
+      ${jaNee('w-ereader', profiel.ereader)}
+      <div id="w-kobo"${profiel.ereader ? '' : ' hidden'}>
+        <h2>Heb je Kobo Plus?</h2>
+        <p>Dan krijg je ook tips over nieuwe e-books in Kobo Plus.</p>
+        ${jaNee('w-koboplus', profiel.koboPlus)}
+      </div>`,
+    4: `
+      <h1>Wat lees je graag?</h1>
+      <p>Kies wat je aanspreekt. Daarop zijn je tips gebaseerd.</p>
+      <div class="keuzes" id="w-cats">${knoppen(
+        CATEGORIEEN.filter((c) => c !== 'Overig').map((c) => [c, c]),
+        lievelingen,
+        'cat'
+      )}</div>`,
+  }[stap];
+  app.innerHTML = `
+    <section class="welkom">
+      <p class="welkom-stap">Stap ${stap} van ${WELKOM_STAPPEN}</p>
+      ${inhoud}
+      <button class="hoofdknop" id="w-verder">${stap === WELKOM_STAPPEN ? 'Beginnen' : 'Volgende'}</button>
+      ${stap > 1 ? '<button class="link-knop" id="w-terug">‹ Terug</button>' : '<a class="link-knop zacht welkom-backup" href="#/instellingen">Heb je al een backup van deze app? Zet hem terug</a>'}
+    </section>`;
+
+  // Bewaren met de keuzes die nu op het scherm staan.
+  const bewaar = async () => {
+    const p = await haalProfiel();
+    const actief = (id, attr) => [...document.querySelectorAll(`#${id} .keuze.actief`)].map((k) => k.dataset[attr]);
+    const ja = (id) => {
+      const k = document.querySelector(`#${id} .keuze.actief`);
+      return k ? k.dataset.ja === '1' : undefined;
+    };
+    if (stap === 1) p.naam = document.getElementById('w-naam').value.trim();
+    if (stap === 2) p.leesvormen = actief('w-vormen', 'vorm');
+    if (stap === 3) {
+      p.ereader = ja('w-ereader');
+      p.koboPlus = p.ereader ? ja('w-koboplus') : false;
+    }
+    if (stap === 4) p.categorieen = actief('w-cats', 'cat');
+    await bewaarProfiel(p);
+  };
+
+  // Meer keuzes tegelijk (leesvorm, categorieën) of precies één (ja/nee).
+  app.querySelectorAll('.keuzes').forEach((groep) =>
+    groep.addEventListener('click', (e) => {
+      const knop = e.target.closest('.keuze');
+      if (!knop) return;
+      if ('ja' in knop.dataset) groep.querySelectorAll('.keuze').forEach((k) => k.classList.toggle('actief', k === knop));
+      else knop.classList.toggle('actief');
+      if (groep.id === 'w-ereader') document.getElementById('w-kobo').hidden = knop.dataset.ja !== '1';
+    })
+  );
+  document.getElementById('w-foto')?.addEventListener('change', async (e) => {
+    const bestand = e.target.files?.[0];
+    if (!bestand) return;
+    try {
+      await bewaar();
+      await bewaarProfielFoto(await vierkanteFoto(bestand));
+    } catch {
+      melding('Deze foto kan ik niet lezen. Kies een andere.');
+      return;
+    }
+    toonWelkom(1);
+  });
+  document.getElementById('w-terug')?.addEventListener('click', async () => {
+    await bewaar();
+    toonWelkom(stap - 1);
+  });
+  document.getElementById('w-verder').addEventListener('click', async () => {
+    await bewaar();
+    if (stap < WELKOM_STAPPEN) return toonWelkom(stap + 1);
+    const p = await haalProfiel();
+    p.welkomKlaar = true;
+    await bewaarProfiel(p);
+    welkomGedaan = true;
+    document.body.classList.remove('welkom-bezig');
+    if (location.hash && location.hash !== '#/') location.hash = '#/';
+    else route();
+  });
+  window.scrollTo(0, 0);
+}
+
 async function toonProfiel() {
   const nr = schermNr;
   ruimCoversOp();
@@ -2965,6 +3095,8 @@ let schermNr = 0;
 // Het startscherm opnieuw tekenen (na aanvullen of een tip). Met een nieuw volgnummer,
 // zodat een tekenbeurt die nog bezig was niet ook nog eens tekent.
 function herteken() {
+  // Tijdens het welkomstscherm niets eroverheen tekenen.
+  if (document.body.classList.contains('welkom-bezig')) return;
   schermNr += 1;
   return toonLijst();
 }
@@ -2982,6 +3114,9 @@ async function route({ naarBoven = false } = {}) {
     await bewaarNog().catch(() => melding('Je recensie kon niet worden bewaard.'));
   }
   window.scrollTo(0, 0);
+  // Eerste keer: eerst het welkomstscherm. Instellingen blijft bereikbaar om een backup terug te zetten.
+  document.body.classList.remove('welkom-bezig');
+  if (location.hash !== '#/instellingen' && (await moetWelkom())) return toonWelkom();
   const boekId = location.hash.match(/^#\/boek\/(\d+)$/);
   const plek = { '#/toevoegen': 'toevoegen', '#/meerdere': 'toevoegen', '#/instellingen': 'instellingen', '#/covers': 'instellingen', '#/zoek': 'zoek' }[location.hash] || 'lijst';
   document.querySelectorAll('.balk a').forEach((a) => a.classList.toggle('actief', a.dataset.plek === plek));

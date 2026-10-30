@@ -621,3 +621,16 @@ button.rij-boek { border: 0; background: none; padding: 0; text-align: left; fon
 /* Zoek bij Kobo: een rustige knop over de hele breedte, in de stijl van de andere knoppen. */
 .kobo-zoek { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; padding: 10px 14px; border: 1px solid var(--lijn); border-radius: 999px; color: var(--accent); text-decoration: none; font-weight: 600; }
 .kobo-zoek svg { width: 18px; height: 18px; fill: currentColor; }
+
+/* Welkomstscherm: zonder de balk onderin, rustig gecentreerd. */
+body.welkom-bezig .balk { display: none; }
+.welkom { max-width: 32rem; margin: 0 auto; padding: 32px 0 48px; }
+.welkom h1 { margin: 6px 0 10px; }
+.welkom h2 { font-size: 1.15rem; margin: 28px 0 6px; }
+.welkom p { line-height: 1.5; }
+.welkom .keuzes { margin-top: 14px; }
+.welkom-stap { color: var(--zacht); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; margin: 0; }
+.welkom-foto { display: flex; align-items: center; gap: 16px; margin-top: 18px; }
+.welkom-foto p { margin: 0; }
+.welkom-foto .link-knop { padding: 0; }
+.welkom-backup { display: block; margin-top: 8px; font-size: 0.9rem; text-decoration: none; }

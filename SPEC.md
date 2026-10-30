@@ -18,3 +18,5 @@ en verfilmingen uit Wikipedia en Wikidata. Alles gratis.
 | 30 okt 2026 | Toevoegen-pagina opnieuw opgemaakt: twee tegels naast elkaar (Scan de streepjescode, Meerdere boeken tegelijk) en één ronde zoekbalk met vergrootglas en Zoek-knop |
 | 30 okt 2026 | Eigen Google-sleutel in een eigen Google Cloud-project (`boeken-gedeeld`), beperkt tot https://wfrd1978.github.io/boeken/* en de Books API: een eigen daglimiet, los van de boeken-app |
 | 30 okt 2026 | Verzoeken aan Google sturen het volledige adres van de app mee (referrerPolicy), anders stuurt de browser alleen het domein en weigert de sleutel (beperkt tot /boeken/*) alles |
+| 30 okt 2026 | Google-zoeken bij een storing (503) tot drie keer proberen; pas daarna tien minuten pauze (was een half uur na één storing). De synopsis zoekt op de hoofdtitel zonder ondertitel |
+| 30 okt 2026 | Covers die alleen een internetadres hebben, legt de app vanzelf als plaatje vast (na covers en synopsis, één poging per boek en cover-adres). De knop daarvoor in Instellingen is weg |

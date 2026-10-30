@@ -78,7 +78,9 @@ async function haalJson(url) {
   const timer = setTimeout(() => ctrl.abort(), WACHTTIJD);
   try {
     if (teller) bewaarTeller({ ...teller, n: teller.n + 1 });
-    const res = await fetch(url, { signal: ctrl.signal });
+    // Google: het volledige adres van de app meesturen. Een browser stuurt anders alleen
+    // 'wfrd1978.github.io', en de sleutel werkt alleen vanaf wfrd1978.github.io/boeken/.
+    const res = await fetch(url, { signal: ctrl.signal, ...(google ? { referrerPolicy: 'no-referrer-when-downgrade' } : {}) });
     if (!res.ok) {
       if (google && res.status === 429) {
         const tekst = await res.text().catch(() => '');

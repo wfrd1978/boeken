@@ -2086,7 +2086,7 @@ async function toonNieuwsBericht(id) {
 // Covers van tips onthouden, zodat ze niet elke keer opnieuw gezocht worden.
 function tipCoverCache() {
   try {
-    return JSON.parse(lokaal.getItem('tipCovers') || '{}');
+    return JSON.parse(lokaal.getItem(TIP_COVERS) || '{}');
   } catch {
     return {};
   }
@@ -2094,6 +2094,9 @@ function tipCoverCache() {
 
 // Een mislukte zoekpoging (bijvoorbeeld bij de Google-daglimiet) na drie dagen opnieuw proberen.
 const TIP_COVER_OPNIEUW = 3 * 86400000;
+// Nieuwe naam (30 okt 2026): de eerste dagen weigerde de Google-sleutel alles, dus de mislukte
+// pogingen uit die tijd tellen niet.
+const TIP_COVERS = 'tipCovers2';
 
 async function tipCover(tip) {
   if (veiligeUrl(tip.coverUrl)) return veiligeUrl(tip.coverUrl);
@@ -2104,7 +2107,7 @@ async function tipCover(tip) {
   const { coverUrl } = await zoekCover(tip, { opTitel: true });
   cache[tip.id] = coverUrl || { mislukt: Date.now() };
   try {
-    lokaal.setItem('tipCovers', JSON.stringify(cache));
+    lokaal.setItem(TIP_COVERS, JSON.stringify(cache));
   } catch {
     // Niet erg; dan zoeken we hem de volgende keer opnieuw.
   }

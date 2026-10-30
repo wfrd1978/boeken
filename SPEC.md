@@ -20,3 +20,4 @@ en verfilmingen uit Wikipedia en Wikidata. Alles gratis.
 | 30 okt 2026 | Verzoeken aan Google sturen het volledige adres van de app mee (referrerPolicy), anders stuurt de browser alleen het domein en weigert de sleutel (beperkt tot /boeken/*) alles |
 | 30 okt 2026 | Google-zoeken bij een storing (503) tot drie keer proberen; pas daarna tien minuten pauze (was een half uur na één storing). De synopsis zoekt op de hoofdtitel zonder ondertitel |
 | 30 okt 2026 | Covers die alleen een internetadres hebben, legt de app vanzelf als plaatje vast (na covers en synopsis, één poging per boek en cover-adres). De knop daarvoor in Instellingen is weg |
+| 30 okt 2026 | Safari stuurt naar Google altijd alleen het domein mee; de sleutel wordt daarom beperkt tot https://wfrd1978.github.io/* (eigen project, dus nog steeds een eigen daglimiet). Mislukte tip-covers van de eerste dagen worden vergeten (nieuwe naam tipCovers2) |

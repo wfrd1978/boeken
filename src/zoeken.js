@@ -6,7 +6,7 @@ import { lokaal } from './lokaal.js';
 
 // Eigen, gratis Google-sleutel van deze app (met toestemming, 30 okt 2026), in een eigen project
 // met een eigen daglimiet, los van de boeken-app. Hij werkt alleen vanaf
-// https://wfrd1978.github.io/boeken/ en alleen voor de Books API, dus openbaar zichtbaar is geen
+// https://wfrd1978.github.io en alleen voor de Books API, dus openbaar zichtbaar is geen
 // probleem. Zonder sleutel deel je de daglimiet met iedereen en krijg je vaak geen antwoord.
 const GOOGLE_SLEUTEL = 'AIzaSyCcFFvlJ8FgYRulDJMtv4XrjZVMdMBaSRs';
 
@@ -78,8 +78,9 @@ async function haalJson(url) {
   const timer = setTimeout(() => ctrl.abort(), WACHTTIJD);
   try {
     if (teller) bewaarTeller({ ...teller, n: teller.n + 1 });
-    // Google: het volledige adres van de app meesturen. Een browser stuurt anders alleen
-    // 'wfrd1978.github.io', en de sleutel werkt alleen vanaf wfrd1978.github.io/boeken/.
+    // Google: het volledige adres van de app meesturen waar de browser dat toestaat. Safari stuurt
+    // naar andere sites altijd alleen 'wfrd1978.github.io'; daarom is de sleutel beperkt tot
+    // https://wfrd1978.github.io/* (en de Books API).
     const res = await fetch(url, { signal: ctrl.signal, ...(google ? { referrerPolicy: 'no-referrer-when-downgrade' } : {}) });
     if (!res.ok) {
       if (google && res.status === 429) {

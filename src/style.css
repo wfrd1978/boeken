@@ -118,7 +118,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* --- Lijst --- */
 
 .lijst-bediening { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }
-.lijst-bediening input, .zoekbalk input, .bevestig input, .datum-toevoegen input, .bevestig textarea {
+.lijst-bediening input, .bevestig input, .datum-toevoegen input, .bevestig textarea {
   width: 100%; min-width: 0; padding: 11px 14px; font-size: 16px;
   border: 1px solid var(--lijn); border-radius: 10px; background: var(--vlak);
 }
@@ -209,9 +209,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* --- Toevoegen en boekscherm --- */
 
-.zoekbalk { display: flex; gap: 8px; margin-bottom: 8px; }
-.zoekbalk input { flex: 1; }
-.zoekbalk button, .hoofdknop {
+.hoofdknop {
   border: 0; border-radius: 10px; padding: 12px 18px;
   background: var(--accent); color: var(--accent-tekst); font-weight: 600;
 }
@@ -276,8 +274,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .waarschuwing details { margin: 0 0 12px; }
 .waarschuwing summary { cursor: pointer; color: var(--tekst); }
 .overslaan { margin: 8px 0 0; padding-left: 18px; font-size: 0.9rem; }
-#import-vak .link-knop, #terugzet-vak .link-knop { display: block; margin: 4px auto 0; text-align: center; }
-#import-vak .hoofdknop { margin-top: 4px; }
+#terugzet-vak .link-knop { display: block; margin: 4px auto 0; text-align: center; }
 
 .verrijk-status { color: var(--zacht); font-size: 0.85rem; margin: 0 0 10px; }
 
@@ -434,7 +431,7 @@ button.rij-boek { border: 0; background: none; padding: 0; text-align: left; fon
 .tip-knoppen .tweede-knop { flex: 1; }
 .tip-kobo { display: block; text-align: center; margin: 6px auto 0; }
 
-/* Statistieken op de profielpagina */
+/* Kopjes op de profielpagina */
 .stat-kop { font-size: 1.05rem; margin: 24px 0 10px; }
 
 /* Tips op de Toevoegen-pagina */

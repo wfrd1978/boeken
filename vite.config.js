@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 // De app draait op https://wfrd1978.github.io/boeken/
 export default defineConfig({
   base: '/boeken/',
-  // SheetJS (Excel) is groot, maar wordt alleen geladen bij importeren en exporteren.
+  // SheetJS (Excel) is groot, maar wordt alleen geladen bij exporteren.
   build: { chunkSizeWarningLimit: 600 },
   // Moment van bouwen, zodat je in de app ziet welke versie je hebt.
   define: {

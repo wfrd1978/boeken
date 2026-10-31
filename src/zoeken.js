@@ -24,10 +24,11 @@ function olPad(sleutel) {
 }
 
 // --- Zuinig met Google ---
-// De sleutel mag 1.000 vragen per dag doen. De teller gaat op nul om middernacht in
-// Californië (in Nederland 9:00 of 10:00). Het werk op de achtergrond mag er hooguit 600
-// gebruiken, zodat er altijd genoeg overblijft om boeken te zoeken en toe te voegen.
-const ACHTERGROND_BUDGET = 600;
+// De sleutel mag 1.000 vragen per dag doen, voor alle gebruikers van deze app samen. De teller
+// gaat op nul om middernacht in Californië (in Nederland 9:00 of 10:00). Het werk op de
+// achtergrond mag op één telefoon hooguit 150 vragen per dag gebruiken, zodat er voor iedereen
+// genoeg overblijft om boeken te zoeken en toe te voegen. Wat blijft liggen, gaat de dag erna door.
+const ACHTERGROND_BUDGET = 150;
 
 function googleDag(nu = new Date()) {
   return nu.toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
@@ -185,7 +186,7 @@ async function zoekGoogleBooks(tekst, alleenNederlands = false, limiet = 10) {
 
 // Google geeft beschrijvingen soms met HTML (<p>, <br>, <b>). Maak er gewone tekst van,
 // met witregels tussen alinea's.
-export function schoneTekst(html) {
+function schoneTekst(html) {
   if (!html) return '';
   const metRegels = String(html)
     .replace(/<br\s*\/?>/gi, '\n')
@@ -417,7 +418,7 @@ export async function testBronnen() {
 }
 
 // Zoekt de gegevens bij een boek waarvan titel en auteur bekend zijn (bijvoorbeeld uit
-// de Excel-lijst). Alleen een resultaat dat echt hetzelfde boek is, telt; Nederlandse
+// een teruggezette backup). Alleen een resultaat dat echt hetzelfde boek is, telt; Nederlandse
 // uitgaven eerst. Geeft null als niets past, en een fout als geen bron bereikbaar is.
 export async function zoekBijpassend(boek, { heeftCover = false } = {}) {
   const auteur = eersteAuteur(boek);
@@ -577,7 +578,10 @@ export async function vierkanteFoto(bestand, maat = 400) {
     canvas
       .getContext('2d')
       .drawImage(img, (img.naturalWidth - kant) / 2, (img.naturalHeight - kant) / 2, kant, kant, 0, 0, canvas.width, canvas.height);
-    return await new Promise((klaar) => canvas.toBlob(klaar, 'image/jpeg', 0.85));
+    // Lukt het omzetten niet, dan een fout: een bestaande foto mag nooit leeg worden.
+    return await new Promise((klaar, fout) =>
+      canvas.toBlob((blob) => (blob ? klaar(blob) : fout(new Error('Foto niet te lezen'))), 'image/jpeg', 0.85)
+    );
   } finally {
     URL.revokeObjectURL(url);
   }

@@ -1,4 +1,4 @@
-// Op de achtergrond covers en gegevens ophalen voor geïmporteerde boeken.
+// Op de achtergrond covers en gegevens ophalen voor nieuwe en teruggezette boeken.
 // Titel en auteur uit de lijst blijven altijd zoals ze zijn ingevuld.
 import { db } from './db.js';
 import { lokaal } from './lokaal.js';
@@ -166,7 +166,7 @@ let synopsisBezig = false;
 
 // Boeken zonder synopsis-veld (undefined) krijgen er een, of '' als niemand er een heeft.
 // Een synopsis die al bestaat, wordt nooit overschreven.
-export async function vulSynopsisAan() {
+async function vulSynopsisAan() {
   if (synopsisBezig || bezig) return;
   synopsisBezig = true;
   const mijnGeneratie = generatie;
@@ -277,7 +277,19 @@ async function coverAlsPlaatje(boek) {
   return blob;
 }
 
-export async function legCoversVanzelfVast() {
+// Zelf een cover van internet gekozen: niet vervangen door het plaatje van Open Library
+// (dat kan een andere uitgave zijn).
+export function coverZelfGekozen(id, coverUrl) {
+  const geprobeerd = vastleggenGeprobeerd();
+  geprobeerd[id] = coverUrl;
+  try {
+    lokaal.setItem(VASTLEGGEN_GEPROBEERD, JSON.stringify(geprobeerd));
+  } catch {
+    // Niet erg.
+  }
+}
+
+async function legCoversVanzelfVast() {
   if (vastleggenBezig || bezig || synopsisBezig) return;
   vastleggenBezig = true;
   const mijnGeneratie = generatie;
@@ -290,8 +302,10 @@ export async function legCoversVanzelfVast() {
       // Ander werk (covers zoeken, een teruggezette backup) gaat voor; dit komt later terug.
       if (!navigator.onLine || bezig || mijnGeneratie !== generatie) break;
       const blob = await coverAlsPlaatje(boek);
+      if (mijnGeneratie !== generatie) break;
       if (blob) {
         await db.boeken.where('id').equals(boek.id).modify((b) => {
+          if (b.titel !== boek.titel || b.toegevoegdOp !== boek.toegevoegdOp) return;
           if (!(b.cover instanceof Blob) && b.coverUrl === boek.coverUrl) b.cover = blob;
         });
       }

@@ -40,3 +40,11 @@ describe('boek delen', () => {
     expect(bolZoekUrl({ titel: 'Vaderland', auteurs: ['Robert Harris'] })).toBe('https://www.bol.com/nl/nl/s/?searchtext=Vaderland%20Robert%20Harris');
   });
 });
+
+describe('delen zonder e-reader', () => {
+  it('laat de Kobo-link weg als je geen e-reader hebt', () => {
+    const boek = { titel: 'Proef', auteurs: ['Iemand'], status: 'Wil ik lezen' };
+    expect(deelTekst(boek, '', { kobo: false })).not.toContain('Kobo:');
+    expect(deelTekst(boek, '')).toContain('Kobo:');
+  });
+});

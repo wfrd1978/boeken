@@ -3,7 +3,7 @@ import { db } from './db.js';
 import { vindDubbel } from './dubbel.js';
 import { veiligeUrl } from './veilig.js';
 
-export async function haalTips() {
+async function haalTips() {
   try {
     const res = await fetch(`${import.meta.env.BASE_URL}tips.json`, { cache: 'no-cache' });
     if (!res.ok) return null;
@@ -20,8 +20,7 @@ export async function tipReacties() {
 
 export async function zetTipReactie(tip, reactie) {
   const reacties = await tipReacties();
-  // Titel, auteur, categorie en soort mee: zo leert de app wat wel en niet aanslaat,
-  // en kan Claude het later ook zien (via een backup).
+  // Titel, auteur, categorie en soort mee: zo leert de app wat wel en niet aanslaat.
   reacties[tip.id] = {
     reactie,
     titel: tip.titel,
@@ -36,6 +35,7 @@ export async function zetTipReactie(tip, reactie) {
 // Alle tips die de app ooit kreeg, bewaard op het toestel. Zo blijven tips waar je
 // nog niet op reageerde staan als er een nieuwe ronde komt; nieuwe tips komen vooraan.
 const MAX_ZICHTBAAR = 8;
+const MAX_BEKEKEN = 200;
 
 // Wat slaat aan? Wil ik lezen telt het zwaarst, Niet voor mij telt negatief.
 // Je vijfsterrenboeken tellen een beetje mee voor hun categorie.
@@ -119,7 +119,12 @@ async function bewaarArchief(ruw, bijwerkingen = []) {
 // Gewone tips en die voor Kobo Plus (soort 'koboplus') staan in aparte rijen.
 export async function tipsUitArchief(boeken, { lievelingen = [], koboPlus = false } = {}) {
   const [archief, reacties] = await Promise.all([db.instellingen.get('tipArchief'), tipReacties()]);
-  const open = (archief?.waarde ?? []).map(normaliseerTip).filter((t) => t && !reacties[t.id] && !vindDubbel(t, boeken));
+  // Alleen de nieuwste tips: het archief groeit elke week, en heel oude tips zonder reactie
+  // hoeven niet steeds opnieuw met de hele lijst te worden vergeleken.
+  const open = (archief?.waarde ?? [])
+    .slice(0, MAX_BEKEKEN)
+    .map(normaliseerTip)
+    .filter((t) => t && !reacties[t.id] && !vindDubbel(t, boeken));
   return ordenTips(
     open.filter((t) => (t.soort === 'koboplus') === koboPlus),
     smaak(reacties, boeken, lievelingen)

@@ -64,6 +64,7 @@ import {
 } from './backup.js';
 import { maakExcel, deelBestand } from './exporteren.js';
 import {
+  coverZelfGekozen,
   verrijkAlles,
   opVoortgang,
   aantalTeVerrijken,
@@ -116,6 +117,8 @@ vraagBlijvendeOpslag();
 zetKoboOm()
   .then(vulLeesvormAan)
   .then(() => vulWerkenAan(zoekWerk))
+  // Gaat een van de omzettingen mis, dan toch gewoon covers en synopsis ophalen.
+  .catch(() => {})
   .then(verrijkAlles);
 // Reeksen herkennen met de lijst van de site (ook bij elke start: dan komen nieuwe delen mee).
 vulReeksenAan().catch(() => {});
@@ -374,7 +377,7 @@ function filter(boeken) {
   const inTab = boeken.filter(
     (b) =>
       (tab === 'Alles' || b.status === tab) &&
-      (!toon || (BEZIT[toon] ? b[BEZIT[toon].veld] : toon === 'geen' ? !b.categorie : b.categorie === toon))
+      (!toon || (BEZIT[toon] ? !zichtbaarBezit().some(([k]) => k === toon) || b[BEZIT[toon].veld] : toon === 'geen' ? !b.categorie : b.categorie === toon))
   );
   if (!woorden.length) return inTab;
   return inTab.filter((b) => {
@@ -392,7 +395,7 @@ function boekRegel(b) {
       <div class="boek-tekst">
         <span class="regel">
           <span class="status status-${STATUSSEN.indexOf(b.status)}">${veilig(statusNaam(b.status))}</span>
-          ${Object.values(BEZIT).filter((x) => b[x.veld]).map((x) => `<span class="status kobo">· ${x.naam}</span>`).join('')}
+          ${zichtbaarBezit().filter(([, x]) => b[x.veld]).map(([, x]) => `<span class="status kobo">· ${x.naam}</span>`).join('')}
           ${categorieStip(b.categorie)}
           ${b.sterren ? `<span class="sterren-klein" aria-label="${b.sterren} sterren">${sterrenTekst(b.sterren)}</span>` : ''}
         </span>
@@ -921,7 +924,7 @@ function overDezeAppHtml() {
       <details>
         <summary>Hoe werkt het ophalen van covers en synopsis?</summary>
         <p>Bij nieuwe boeken zoekt de app op de achtergrond covers, gegevens en een korte synopsis. Dat gaat alleen door zolang de app open is.</p>
-        <p>Google Books beantwoordt 1.000 vragen per dag. Het werk op de achtergrond gebruikt er hooguit 600, zodat zoeken altijd blijft werken. Is het op, dan gaat het de volgende ochtend vanaf 9:00 of 10:00 verder.</p>
+        <p>Google Books beantwoordt 1.000 vragen per dag, voor alle gebruikers van deze app samen. Het werk op de achtergrond gebruikt er op jouw telefoon hooguit 150, zodat zoeken altijd blijft werken. Wat blijft liggen, gaat de volgende ochtend vanaf 9:00 of 10:00 verder.</p>
         <p>Covers van Open Library worden als plaatje op je telefoon bewaard. Covers van Google bewaart de app zo goed als het gaat, zodat ze snel verschijnen.</p>
         <p>Geen cover gevonden? Via Covers zelf nalopen zoek je per boek in Google Afbeeldingen, kopieer je het plaatje en plak je het in de app. Automatisch de eerste hit van Google gebruiken kan niet: Google biedt daar geen gratis koppeling meer voor.</p>
       </details>
@@ -1131,7 +1134,7 @@ async function toonInstellingen() {
                 ? ' (even te druk, probeer het zo nog eens)'
                 : r.status === 403 ? ' (sleutel geweigerd)' : r.status ? ` (fout ${r.status})` : ' (geen verbinding)'
           }`;
-    uitslag.textContent = `${regel('Open Library', openLibrary)}. ${regel('Google Books', google)}. Vandaag ${googleStand().gebruikt} van de 1.000 Google-vragen gebruikt.`;
+    uitslag.textContent = `${regel('Open Library', openLibrary)}. ${regel('Google Books', google)}. Vandaag ${googleStand().gebruikt} Google-vragen gebruikt op deze telefoon.`;
   });
 
   const verrijkOpen = await aantalTeVerrijken();
@@ -1257,7 +1260,7 @@ async function toonMeerdere() {
       <a class="terug" href="#/toevoegen">‹ Toevoegen</a>
       <h1>Meerdere boeken</h1>
     </header>
-    <p class="zacht">Plak of scan een rijtje titels, één per regel. "Titel – schrijver" mag ook. Scannen: tik in het vak, tik nog eens en kies Scan tekst, en richt op het bibliotheekscherm van je ereader.</p>
+    <p class="zacht">Plak of scan een rijtje titels, één per regel. "Titel – schrijver" mag ook. Scannen: tik in het vak, tik nog eens en kies Scan tekst, en richt op het bibliotheekscherm van je e-reader of op de ruggen in je boekenkast.</p>
     <textarea id="meer-tekst" rows="7" placeholder="De vrouw in de kooi&#10;Inferno – Dan Brown">${veilig(meerdereTekst)}</textarea>
     <button class="hoofdknop" id="meer-zoek">Zoek deze boeken</button>
     <div id="meer-uitslag"></div>`;
@@ -1518,7 +1521,7 @@ async function toonResultaten(resultaten) {
           <div class="boek-tekst">
             <strong>${veilig(b.titel)}</strong>
             <span>${veilig(auteurTekst(b))}${b.jaar ? ` · ${veilig(b.jaar)}` : ''}${b.taal ? ` · ${veilig(b.taal.toUpperCase())}` : ''}</span>
-            ${vindDubbel(b, mijnBoeken) ? `<span class="al-in-lijst">Staat al in je lijst · ${veilig(statusNaam(vindDubbel(b, mijnBoeken).status))}</span>` : ''}
+            ${((al) => (al ? `<span class="al-in-lijst">Staat al in je lijst · ${veilig(statusNaam(al.status))}</span>` : ''))(vindDubbel(b, mijnBoeken))}
           </div>
         </button></li>`
         )
@@ -1749,7 +1752,12 @@ let welkomGedaan = false;
 
 async function moetWelkom() {
   if (welkomGedaan) return false;
-  welkomGedaan = Boolean((await haalProfiel()).welkomKlaar);
+  try {
+    welkomGedaan = Boolean((await haalProfiel()).welkomKlaar);
+  } catch {
+    // Geen opslag (bijvoorbeeld een privévenster): dan geen welkomstscherm, de app meldt het zelf.
+    return false;
+  }
   return !welkomGedaan;
 }
 
@@ -1818,6 +1826,8 @@ async function toonWelkom(stap = 1) {
     if (stap === 4) p.categorieen = gekozen('w-cats', 'cat');
     await bewaarProfiel(p);
   };
+  // Gaat de app naar de achtergrond of naar een ander scherm, dan bewaren wat er al staat.
+  toonBoek.bewaarOpenstaand = bewaar;
 
   // Meer keuzes tegelijk (leesvorm, categorieën) of precies één (ja/nee).
   app.querySelectorAll('.keuzes').forEach((groep) =>
@@ -1851,6 +1861,7 @@ async function toonWelkom(stap = 1) {
     p.welkomKlaar = true;
     await bewaarProfiel(p);
     welkomGedaan = true;
+    toonBoek.bewaarOpenstaand = null;
     document.body.classList.remove('welkom-bezig');
     if (location.hash && location.hash !== '#/') location.hash = '#/';
     else route();
@@ -2243,6 +2254,9 @@ function toonTip(tip, boeken, opnieuw = herteken) {
 
 // Een tip als boek in de lijst zetten, met een voorstel voor de categorie.
 async function voegTipToe(tip, reactie, boeken) {
+  // Staat het boek er intussen al (bijvoorbeeld na een eerdere poging), dan dat boek gebruiken.
+  const al = vindDubbel(tip, await alleBoeken());
+  if (al) return al.id;
   const cover = await zoekCover(tip);
   const id = await boekToevoegen({
     titel: tip.titel,
@@ -2370,7 +2384,9 @@ async function toonCoverKeuze(boek, bewaar, klaar) {
     const knop = e.target.closest('.keuze-cover');
     if (!knop) return;
     knop.classList.add('gekozen');
-    await bewaar(await bewaarbareCover(urls[Number(knop.dataset.i)]));
+    const gekozen = await bewaarbareCover(urls[Number(knop.dataset.i)]);
+    await bewaar(gekozen);
+    if (!gekozen.cover) coverZelfGekozen(boek.id, gekozen.coverUrl);
     klaar();
     sluit();
     melding('Cover bewaard');
@@ -2678,7 +2694,7 @@ async function toonBoek(id) {
 
   document.getElementById('deel').addEventListener('click', async () => {
     // De recensie zoals hij nu in het vak staat, ook als hij nog niet bewaard is.
-    const tekst = deelTekst(boek, document.getElementById('recensie').value);
+    const tekst = deelTekst(boek, document.getElementById('recensie').value, { kobo: metKobo() });
     try {
       if ((await deelBoek(tekst)) === 'gekopieerd') melding('Tekst gekopieerd. Plak hem waar je wilt.');
     } catch {
@@ -2870,6 +2886,8 @@ async function route({ naarBoven = false } = {}) {
   scrollPlekken[vorigeHash] = window.scrollY;
   vorigeHash = location.hash || '#/';
   sluitScanner();
+  // Een open laag (tip, cover kiezen) hoort bij het vorige scherm.
+  document.querySelectorAll('.laag').forEach((laag) => laag.remove());
   // Een recensie die nog niet bewaard is, eerst opslaan.
   if (toonBoek.bewaarOpenstaand) {
     const bewaarNog = toonBoek.bewaarOpenstaand;

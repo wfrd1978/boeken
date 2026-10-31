@@ -50,7 +50,7 @@ export async function maakExcel() {
   const inhoud = XLSX.write(werkmap, { bookType: 'xlsx', type: 'array' });
   const datum = new Date().toISOString().slice(0, 10);
   return {
-    bestand: new File([inhoud], `boeken-${datum}.xlsx`, {
+    bestand: new File([inhoud], `mijn-boeken-${datum}.xlsx`, {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     }),
     aantal: boeken.length,

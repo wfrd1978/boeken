@@ -22,10 +22,15 @@ function blobNaarTekst(blob) {
 // Zelf ontleden in plaats van fetch(): de veiligheidsregels van de app staan fetch van
 // 'data:'-adressen bewust niet toe.
 async function tekstNaarBlob(dataUrl) {
-  const [kop, gegevens = ''] = dataUrl.split(',');
-  const type = kop.match(/^data:([^;,]+)/)?.[1] ?? 'image/jpeg';
-  const bytes = /;base64$/.test(kop) ? atob(gegevens) : decodeURIComponent(gegevens);
-  return new Blob([Uint8Array.from(bytes, (c) => c.charCodeAt(0))], { type });
+  // Een beschadigd plaatje wordt 'geen cover', zodat de rest van de backup gewoon terugkomt.
+  try {
+    const [kop, gegevens = ''] = dataUrl.split(',');
+    const type = kop.match(/^data:([^;,]+)/)?.[1] ?? 'image/jpeg';
+    const bytes = /;base64$/.test(kop) ? atob(gegevens) : decodeURIComponent(gegevens);
+    return new Blob([Uint8Array.from(bytes, (c) => c.charCodeAt(0))], { type });
+  } catch {
+    return null;
+  }
 }
 
 // Keuzes in de lijst (sorteren, tab, filter): klein, maar fijn om mee te verhuizen.
@@ -80,7 +85,7 @@ export async function maakBackupBestand() {
     voorkeuren: leesVoorkeuren(),
   };
   const datum = nu.toISOString().slice(0, 10);
-  const bestand = new File([JSON.stringify(inhoud)], `boeken-backup-${datum}.json`, { type: 'application/json' });
+  const bestand = new File([JSON.stringify(inhoud)], `mijn-boeken-backup-${datum}.json`, { type: 'application/json' });
   // Het moment van de momentopname, en hoeveel wijzigingen er toen waren: wat je daarna nog
   // verandert (vóór je op Bewaar tikt), zit niet in de backup en telt dus gewoon door.
   bestand.momentopname = { tijd: nu.toISOString(), wijzigingen: wijzigingenSindsBackup() };
@@ -175,14 +180,15 @@ export async function leesBackup(bestand) {
   return inhoud;
 }
 
-function schoonProfiel(p) {
+export function schoonProfiel(p) {
   if (!p || typeof p !== 'object') return null;
   const tekst = (v) => (typeof v === 'string' ? v : '');
   const profiel = { naam: tekst(p.naam) };
   // Antwoorden van het welkomstscherm.
-  const lijst = (v, mag) => (Array.isArray(v) ? v.filter((x) => mag.includes(x)) : []);
-  profiel.leesvormen = lijst(p.leesvormen, Object.keys(LEESVORMEN));
-  profiel.categorieen = lijst(p.categorieen, CATEGORIEEN);
+  // Staat een keuze niet in de backup (bijvoorbeeld een backup van de boeken-app), dan blijft
+  // de huidige keuze staan.
+  if (Array.isArray(p.leesvormen)) profiel.leesvormen = p.leesvormen.filter((x) => Object.hasOwn(LEESVORMEN, x));
+  if (Array.isArray(p.categorieen)) profiel.categorieen = p.categorieen.filter((x) => CATEGORIEEN.includes(x));
   if (typeof p.ereader === 'boolean') profiel.ereader = p.ereader;
   if (typeof p.koboPlus === 'boolean') profiel.koboPlus = p.koboPlus;
   return profiel;
@@ -226,10 +232,10 @@ export async function zetBackupTerug(inhoud) {
   await db.transaction('rw', db.boeken, db.instellingen, async () => {
     await db.boeken.clear();
     await db.boeken.bulkAdd(boeken);
-    // Een oudere backup zonder profiel laat het huidige profiel staan.
+    // Wat de backup over het profiel zegt, gaat voor; de rest blijft zoals het nu is.
     // Wie een backup terugzet, hoeft het welkomstscherm niet meer te zien.
-    const nu = profiel ?? (await db.instellingen.get('profiel'))?.waarde ?? { naam: '' };
-    await db.instellingen.put({ sleutel: 'profiel', waarde: { ...nu, welkomKlaar: true } });
+    const nu = (await db.instellingen.get('profiel'))?.waarde ?? { naam: '' };
+    await db.instellingen.put({ sleutel: 'profiel', waarde: { ...nu, ...(profiel ?? {}), welkomKlaar: true } });
     if (reacties) await db.instellingen.put({ sleutel: 'tipReacties', waarde: reacties });
     // Een backup zonder foto laat de huidige foto staan.
     if (foto) await db.instellingen.put({ sleutel: 'profielFoto', waarde: foto });
@@ -237,5 +243,10 @@ export async function zetBackupTerug(inhoud) {
     if (nieuws) await db.instellingen.put({ sleutel: 'nieuwsArchief', waarde: nieuws });
   });
   zetVoorkeuren(inhoud.voorkeuren);
+  try {
+    lokaal.removeItem('coverVastGeprobeerd');
+  } catch {
+    // Niet erg.
+  }
   return boeken.length;
 }

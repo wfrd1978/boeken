@@ -37,7 +37,7 @@ export async function nieuwsArchief() {
 }
 
 // Nieuwe berichten (en verbeterde versies van bestaande) bewaren in het archief.
-export async function bewaarNieuws(berichten) {
+async function bewaarNieuws(berichten) {
   const archief = await nieuwsArchief();
   const opId = new Map(archief.map((b) => [b.id, b]));
   let veranderd = false;
@@ -66,7 +66,7 @@ export async function haalNieuws() {
 }
 
 // Gaat een bericht over een schrijver uit de eigen lijst? Dat wordt alleen
-// op de telefoon bekeken; het nieuwsbestand zelf weet niets van zijn lijst.
+// op de telefoon bekeken; het nieuwsbestand zelf weet niets van de eigen lijst.
 export function overMijnSchrijver(bericht, boeken) {
   const mijn = new Set(boeken.flatMap((b) => b.auteurs ?? []).map(kaal));
   return (bericht.schrijvers ?? []).some((s) => mijn.has(kaal(s)));

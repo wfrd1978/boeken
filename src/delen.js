@@ -21,7 +21,7 @@ export function bolZoekUrl(boek) {
 }
 
 // Opening, titel en auteur, categorie en oordeel, je recensie, waar het over gaat en waar je het koopt.
-export function deelTekst(boek, recensie = boek.recensie) {
+export function deelTekst(boek, recensie = boek.recensie, { kobo = true } = {}) {
   const auteurs = (boek.auteurs ?? []).join(' & ');
   const blokken = [OPENING, auteurs ? `${boek.titel}, van ${auteurs}` : boek.titel];
 
@@ -35,7 +35,8 @@ export function deelTekst(boek, recensie = boek.recensie) {
   if (mijn) blokken.push(`Wat ik ervan vond:\n"${mijn}"`);
   const synopsis = inkorten(boek.synopsis, 350);
   if (synopsis) blokken.push(`Waar het over gaat:\n${synopsis}`);
-  blokken.push(`Kobo: ${koboZoekUrl(boek)}\nBol.com: ${bolZoekUrl(boek)}`);
+  // De Kobo-link alleen voor wie een e-reader heeft.
+  blokken.push(kobo ? `Kobo: ${koboZoekUrl(boek)}\nBol.com: ${bolZoekUrl(boek)}` : `Bol.com: ${bolZoekUrl(boek)}`);
   return blokken.join('\n\n');
 }
 

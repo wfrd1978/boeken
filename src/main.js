@@ -1774,29 +1774,57 @@ let installatieOverslaan = false;
 
 function toonInstalleren() {
   document.body.classList.add('welkom-bezig');
+  // Vooraf het systeem dat we herkennen; wisselen kan altijd.
   const iphone = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const deelIcoon =
     '<svg class="deel-icoon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l4 4-1.4 1.4L13 6.8V15h-2V6.8L9.4 8.4 8 7z" /><path d="M5 10h4v2H7v8h10v-8h-2v-2h4v12H5z" /></svg>';
-  const stappen = iphone
-    ? [
+  const UITLEG = {
+    ios: {
+      stappen: [
         `Tik onderin Safari op de deelknop ${deelIcoon}`,
         'Scrol een stukje omlaag en kies <b>Zet op beginscherm</b>',
         'Tik op <b>Voeg toe</b> en open Boeken vanaf je beginscherm',
-      ]
-    : [
-        'Tik in de browser op het menu (de drie puntjes)',
+      ],
+      noot: 'Gebruik Safari: in andere browsers op de iPhone ontbreekt deze keuze soms.',
+    },
+    android: {
+      stappen: [
+        'Tik in Chrome rechtsboven op het menu <b>⋮</b>',
         'Kies <b>Toevoegen aan startscherm</b> of <b>App installeren</b>',
-        'Open Boeken vanaf je startscherm',
-      ];
+        'Tik op <b>Installeren</b> en open Boeken vanaf je startscherm',
+      ],
+      noot: 'Gebruik je Samsung Internet? Tik dan onderin op het menu en kies <b>Pagina toevoegen aan</b> en dan <b>Startscherm</b>.',
+    },
+  };
+  let systeem = iphone ? 'ios' : 'android';
   app.innerHTML = `
     <section class="welkom">
       <p class="welkom-stap">Eerst even dit</p>
       <h1>Zet Boeken op je beginscherm</h1>
       <p>Dan werkt Boeken als een gewone app: met één tik open, ook zonder internet.</p>
-      <ol class="installatie">${stappen.map((s) => `<li>${s}</li>`).join('')}</ol>
+      <p class="label">Wat voor telefoon heb je?</p>
+      <div class="keuzes" id="w-systeem">
+        <button class="keuze" data-systeem="ios">iPhone of iPad</button>
+        <button class="keuze" data-systeem="android">Android</button>
+      </div>
+      <div id="w-uitleg"></div>
       <p class="zacht">Begin daarna in de app op je beginscherm. Wat je hier in de browser invult, zie je daar niet terug.</p>
       <button class="link-knop" id="w-browser">Toch verder in de browser</button>
     </section>`;
+  const toon = () => {
+    const u = UITLEG[systeem];
+    document.querySelectorAll('#w-systeem .keuze').forEach((k) => k.classList.toggle('actief', k.dataset.systeem === systeem));
+    document.getElementById('w-uitleg').innerHTML = `
+      <ol class="installatie">${u.stappen.map((x) => `<li>${x}</li>`).join('')}</ol>
+      <p class="zacht klein">${u.noot}</p>`;
+  };
+  toon();
+  document.getElementById('w-systeem').addEventListener('click', (e) => {
+    const knop = e.target.closest('.keuze');
+    if (!knop) return;
+    systeem = knop.dataset.systeem;
+    toon();
+  });
   document.getElementById('w-browser').addEventListener('click', () => {
     installatieOverslaan = true;
     toonWelkom(1);

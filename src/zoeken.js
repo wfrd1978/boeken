@@ -4,11 +4,11 @@ import { lokaal } from './lokaal.js';
 
 // Boekgegevens ophalen bij Open Library en Google Books (gratis).
 
-// Eigen, gratis Google-sleutel van deze app (met toestemming, 30 okt 2026), in een eigen project
+// Eigen, gratis Google-sleutel van deze app (met toestemming, 31 okt 2026), in een eigen project
 // met een eigen daglimiet, los van de boeken-app. Hij werkt alleen vanaf
 // https://wfrd1978.github.io en alleen voor de Books API, dus openbaar zichtbaar is geen
 // probleem. Zonder sleutel deel je de daglimiet met iedereen en krijg je vaak geen antwoord.
-const GOOGLE_SLEUTEL = 'AIzaSyCcFFvlJ8FgYRulDJMtv4XrjZVMdMBaSRs';
+const GOOGLE_SLEUTEL = 'AIzaSyDMv0s32wPtw3MEDPL1tr-npN0paisNBtI';
 
 // country=NL: Google wil weten voor welk land de gegevens zijn.
 function googleUrl(zoekvraag, extra = '') {

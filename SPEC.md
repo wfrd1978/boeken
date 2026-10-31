@@ -21,3 +21,4 @@ en verfilmingen uit Wikipedia en Wikidata. Alles gratis.
 | 30 okt 2026 | Google-zoeken bij een storing (503) tot drie keer proberen; pas daarna tien minuten pauze (was een half uur na één storing). De synopsis zoekt op de hoofdtitel zonder ondertitel |
 | 30 okt 2026 | Covers die alleen een internetadres hebben, legt de app vanzelf als plaatje vast (na covers en synopsis, één poging per boek en cover-adres). De knop daarvoor in Instellingen is weg |
 | 30 okt 2026 | Safari stuurt naar Google altijd alleen het domein mee; de sleutel wordt daarom beperkt tot https://wfrd1978.github.io/* (eigen project, dus nog steeds een eigen daglimiet). Mislukte tip-covers van de eerste dagen worden vergeten (nieuwe naam tipCovers2) |
+| 31 okt 2026 | Nieuwe Google-sleutel in een nieuw project `boeken-gedeeld`, beperkt tot https://wfrd1978.github.io/* en de Books API (de vorige sleutel stond beperkt tot /boeken/* en werkte daardoor niet in Safari) |

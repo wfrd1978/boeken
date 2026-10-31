@@ -52,7 +52,7 @@ en zet de bron in `reden`. Verzin geen samenvattingen: liever geen `synopsis` (d
 
 ## Werklijst (ideeën van de eigenaar, nog niet ingepland)
 
-- **Uitleg 'Zet op beginscherm' in het welkomstscherm** (31 okt): wie de app voor het eerst in Safari opent, krijgt in het welkomstscherm uitgelegd hoe je hem op het beginscherm zet (deelknop → Zet op beginscherm), met de waarschuwing dat Safari en de app op het beginscherm elk hun eigen gegevens hebben. Eventueel herkennen of de app al vanaf het beginscherm draait en de uitleg dan overslaan.
+- **Uitleg 'Zet op beginscherm' in het welkomstscherm** (31 okt, gebouwd, ter test): wie de app voor het eerst in Safari opent, krijgt in het welkomstscherm uitgelegd hoe je hem op het beginscherm zet (deelknop → Zet op beginscherm), met de waarschuwing dat Safari en de app op het beginscherm elk hun eigen gegevens hebben. Eventueel herkennen of de app al vanaf het beginscherm draait en de uitleg dan overslaan.
 
 ## Wekelijkse taak
 

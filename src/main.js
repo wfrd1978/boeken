@@ -1763,7 +1763,49 @@ async function moetWelkom() {
 
 const WELKOM_STAPPEN = 4;
 
+// Draait de app vanaf het beginscherm, of in de browser (Safari)?
+function opBeginscherm() {
+  return window.navigator.standalone === true || window.matchMedia?.('(display-mode: standalone)').matches;
+}
+
+// In de browser eerst uitleggen hoe je de app op je beginscherm zet: Safari en de app op het
+// beginscherm bewaren elk hun eigen gegevens, dus begin je liefst meteen in de app zelf.
+let installatieOverslaan = false;
+
+function toonInstalleren() {
+  document.body.classList.add('welkom-bezig');
+  const iphone = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const deelIcoon =
+    '<svg class="deel-icoon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l4 4-1.4 1.4L13 6.8V15h-2V6.8L9.4 8.4 8 7z" /><path d="M5 10h4v2H7v8h10v-8h-2v-2h4v12H5z" /></svg>';
+  const stappen = iphone
+    ? [
+        `Tik onderin Safari op de deelknop ${deelIcoon}`,
+        'Scrol een stukje omlaag en kies <b>Zet op beginscherm</b>',
+        'Tik op <b>Voeg toe</b> en open Boeken vanaf je beginscherm',
+      ]
+    : [
+        'Tik in de browser op het menu (de drie puntjes)',
+        'Kies <b>Toevoegen aan startscherm</b> of <b>App installeren</b>',
+        'Open Boeken vanaf je startscherm',
+      ];
+  app.innerHTML = `
+    <section class="welkom">
+      <p class="welkom-stap">Eerst even dit</p>
+      <h1>Zet Boeken op je beginscherm</h1>
+      <p>Dan werkt Boeken als een gewone app: met één tik open, ook zonder internet.</p>
+      <ol class="installatie">${stappen.map((s) => `<li>${s}</li>`).join('')}</ol>
+      <p class="zacht">Begin daarna in de app op je beginscherm. Wat je hier in de browser invult, zie je daar niet terug.</p>
+      <button class="link-knop" id="w-browser">Toch verder in de browser</button>
+    </section>`;
+  document.getElementById('w-browser').addEventListener('click', () => {
+    installatieOverslaan = true;
+    toonWelkom(1);
+  });
+  window.scrollTo(0, 0);
+}
+
 async function toonWelkom(stap = 1) {
+  if (stap === 1 && !installatieOverslaan && !opBeginscherm()) return toonInstalleren();
   const nr = schermNr;
   const [profiel, foto] = await Promise.all([haalProfiel(), profielFotoAdres()]);
   if (nr !== schermNr) return;

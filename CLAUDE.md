@@ -47,7 +47,7 @@ en zet de bron in `reden`. Verzin geen samenvattingen: liever geen `synopsis` (d
 | 3 | ~~Opruimen: profiel alleen naam en foto; recensiehulp, Excel-import en statistieken eruit; teksten herschreven~~ — getest en klaar (30 okt) |
 | 4 | ~~Tips per persoon gekozen uit één algemene lijst, plus rij 'Nieuw in Kobo Plus'; Kobo-onderdelen alleen bij een e-reader, Kobo Plus-onderdelen alleen bij Kobo Plus~~ — getest en klaar (30 okt) |
 | 5 | ~~Eigen Google-sleutel in een eigen project, beperkt tot wfrd1978.github.io (Safari stuurt alleen het domein mee)~~ — getest en klaar (31 okt) |
-| 6 | Wekelijkse taak voor de algemene tips (`tips.json`), met proefrun |
+| 6 | ~~Wekelijkse taak voor de algemene tips (`tips.json`), met proefrun~~ — getest en klaar (31 okt) |
 | 7 | Delen met een proefgroep van twee of drie mensen |
 
 ## Werklijst (ideeën van de eigenaar, nog niet ingepland)

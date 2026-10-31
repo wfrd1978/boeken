@@ -49,3 +49,11 @@ en zet de bron in `reden`. Verzin geen samenvattingen: liever geen `synopsis` (d
 | 5 | ~~Eigen Google-sleutel in een eigen project, beperkt tot wfrd1978.github.io (Safari stuurt alleen het domein mee)~~ — getest en klaar (31 okt) |
 | 6 | Wekelijkse taak voor de algemene tips (`tips.json`), met proefrun |
 | 7 | Delen met een proefgroep van twee of drie mensen |
+
+## Werklijst (ideeën van de eigenaar, nog niet ingepland)
+
+- **Uitleg 'Zet op beginscherm' in het welkomstscherm** (31 okt): wie de app voor het eerst in Safari opent, krijgt in het welkomstscherm uitgelegd hoe je hem op het beginscherm zet (deelknop → Zet op beginscherm), met de waarschuwing dat Safari en de app op het beginscherm elk hun eigen gegevens hebben. Eventueel herkennen of de app al vanaf het beginscherm draait en de uitleg dan overslaan.
+
+## Wekelijkse taak
+
+'Wekelijkse tips app Boeken' (zaterdag 07:12, Amsterdamse tijd) maakt elke week een nieuwe algemene `public/tips.json`. De opdracht staat in de account bij Routines. Is de bouwsessie weg: de taak opzoeken (list_triggers), opnieuw aan een nieuwe sessie met deze repository koppelen en een proefrun doen.

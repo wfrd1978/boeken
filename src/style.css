@@ -645,3 +645,6 @@ body.welkom-bezig .balk { display: none; }
 .kobo-gedownload.klaar { background: none; color: var(--zacht); border-color: var(--lijn); }
 .kobo-regel.klaar .boek-tekst { opacity: 0.6; }
 
+.browser-gevolg { text-align: left; }
+.browser-gevolg p { margin: 0 0 6px; }
+.browser-gevolg ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }

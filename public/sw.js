@@ -4,7 +4,7 @@ const CACHE = 'deel-v1';
 // Covers van Google Books en Open Library apart bewaren, zodat ze na een herstart meteen
 // van de telefoon komen in plaats van opnieuw van internet.
 const COVERS = 'deel-covers-v1';
-const COVER_ADRESSEN = ['books.google.com', 'books.googleusercontent.com', 'covers.openlibrary.org', 'static.unbidan.nl'];
+const COVER_ADRESSEN = ['books.google.com', 'books.googleusercontent.com', 'covers.openlibrary.org', 'static.unbidan.nl', 'cover.biblion.nl'];
 const MAX_COVERS = 600;
 const WACHT_OP_NETWERK = 3000;
 

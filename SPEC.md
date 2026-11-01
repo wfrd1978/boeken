@@ -31,3 +31,4 @@ en verfilmingen uit Wikipedia en Wikidata. Alles gratis.
 | 1 nov 2026 | Kobo-check: titel over de volle breedte (hooguit twee regels), daaronder de knoppen Bekijk bij Kobo en Gedownload |
 | 1 nov 2026 | Een gezocht boek toevoegen als Gelezen opent meteen de boekpagina (sterren, recensie), net als bij een tip |
 | 1 nov 2026 | Zoek (en 'Alles ›' bij een rij) blijft bij de lijst terwijl erboven nieuws, tips en covers verschijnen |
+| 1 nov 2026 | Covers van Nederlandse uitgaven ook via Biblion (de coverdienst van de bibliotheken; gratis, zonder sleutel, geen officiële koppeling; alleen het ISBN gaat mee): in zoekresultaten zonder cover, en bij toevoegen en op de achtergrond na Open Library, alleen als het een echte cover is (een leeg plaatje wordt de beginletter). Niet als bestand vast te leggen (zoals Google), wel bewaard voor snel tonen. Schrijver uit de KB zonder 'door' ervoor |

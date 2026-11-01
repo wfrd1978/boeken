@@ -1466,8 +1466,8 @@ async function zoekGescandBoek(isbn, bron) {
     }
     reden = 'google';
   }
-  if (boek) toonBevestigen({ ...boek, bron });
-  else toonBevestigen({ titel: '', auteurs: [], isbn, handmatig: true, bron, reden });
+  if (boek) kiesBoek({ ...boek, bron });
+  else kiesBoek({ titel: '', auteurs: [], isbn, handmatig: true, bron, reden });
 }
 
 let zoekBron = 'getypt';
@@ -1520,7 +1520,7 @@ function zelfInvullenKnop() {
 
 function koppelZelfInvullen() {
   document.getElementById('zelf').addEventListener('click', () =>
-    toonBevestigen({ titel: laatsteZoekterm, auteurs: [], handmatig: true })
+    kiesBoek({ titel: laatsteZoekterm, auteurs: [], handmatig: true })
   );
 }
 
@@ -1548,9 +1548,18 @@ async function toonResultaten(resultaten) {
     ${zelfInvullenKnop()}
   `;
   vak.querySelectorAll('.resultaat').forEach((knop) =>
-    knop.addEventListener('click', () => toonBevestigen({ ...resultaten[Number(knop.dataset.i)], bron: zoekBron }))
+    knop.addEventListener('click', () => kiesBoek({ ...resultaten[Number(knop.dataset.i)], bron: zoekBron }))
   );
   koppelZelfInvullen();
+}
+
+// Een gekozen boek (uit zoeken, scannen of zelf invullen) op een eigen adres, zodat terugswipen
+// weer bij de zoekresultaten uitkomt in plaats van de Toevoegen-pagina te verlaten.
+let gekozenBoek = null;
+function kiesBoek(boek) {
+  gekozenBoek = boek;
+  if (location.hash === '#/toevoegen/boek') toonBevestigen(boek);
+  else location.hash = '#/toevoegen/boek';
 }
 
 async function toonBevestigen(boek) {
@@ -1665,11 +1674,14 @@ async function toonBevestigen(boek) {
     // Intussen ergens anders heen gegaan? Dan daar blijven.
     if (!knop.isConnected) return melding('Toegevoegd');
     // Al gelezen: meteen naar het boek, om sterren te geven en een recensie te schrijven.
+    // Het bevestigscherm vervangen (niet erbovenop): terugswipen komt dan niet meer bij een
+    // boek uit dat al is toegevoegd.
+    gekozenBoek = null;
     if (status === 'Gelezen') {
-      location.hash = `#/boek/${id}`;
+      location.replace(`#/boek/${id}`);
       melding('Toegevoegd als gelezen. Geef je oordeel!');
     } else {
-      location.hash = '#/';
+      location.replace('#/');
       melding('Toegevoegd');
     }
   });
@@ -2987,15 +2999,15 @@ function herteken() {
 // Naar een plek op de pagina springen en daar blijven terwijl erboven nog nieuws, tips en
 // covers verschijnen (die duwen de pagina anders omlaag). Scrolt de gebruiker zelf, dan stopt het.
 let stopInBeeld = null;
-function houdInBeeld(el, { behavior = 'auto', duur = 2500 } = {}) {
+function houdInBeeld(el, { behavior = 'auto', block = 'start', duur = 2500 } = {}) {
   stopInBeeld?.();
   if (!el) return;
-  el.scrollIntoView({ behavior });
+  el.scrollIntoView({ behavior, block });
   // De eerste melding komt meteen bij het beginnen met kijken: die telt niet.
   let eerste = true;
   const opnieuw = () => {
     if (eerste) return (eerste = false);
-    if (el.isConnected) el.scrollIntoView();
+    if (el.isConnected) el.scrollIntoView({ block });
   };
   const kijker = new ResizeObserver(opnieuw);
   kijker.observe(document.getElementById('app'));
@@ -3013,6 +3025,7 @@ function houdInBeeld(el, { behavior = 'auto', duur = 2500 } = {}) {
 async function route({ naarBoven = false } = {}) {
   schermNr += 1;
   scrollPlekken[vorigeHash] = window.scrollY;
+  const vanBoek = Number(vorigeHash.match(/^#\/boek\/(\d+)$/)?.[1]) || 0;
   vorigeHash = location.hash || '#/';
   sluitScanner();
   stopInBeeld?.();
@@ -3031,9 +3044,10 @@ async function route({ naarBoven = false } = {}) {
   if (location.hash !== '#/instellingen' && (await moetWelkom())) return toonWelkom();
   mijnProfiel = await haalProfiel();
   const boekId = location.hash.match(/^#\/boek\/(\d+)$/);
-  const plek = { '#/toevoegen': 'toevoegen', '#/meerdere': 'toevoegen', '#/instellingen': 'instellingen', '#/covers': 'instellingen', '#/zoek': 'zoek' }[location.hash] || 'lijst';
+  const plek = { '#/toevoegen': 'toevoegen', '#/toevoegen/boek': 'toevoegen', '#/meerdere': 'toevoegen', '#/instellingen': 'instellingen', '#/covers': 'instellingen', '#/zoek': 'zoek' }[location.hash] || 'lijst';
   document.querySelectorAll('.balk a').forEach((a) => a.classList.toggle('actief', a.dataset.plek === plek));
   if (location.hash === '#/toevoegen') toonToevoegen();
+  else if (location.hash === '#/toevoegen/boek') gekozenBoek ? toonBevestigen(gekozenBoek) : toonToevoegen();
   else if (location.hash === '#/instellingen') toonInstellingen();
   else if (location.hash === '#/meerdere') toonMeerdere();
   else if (location.hash === '#/profiel') toonProfiel();
@@ -3053,6 +3067,9 @@ async function route({ naarBoven = false } = {}) {
   else if (location.hash === '#/zoek') {
     // Zoeken = de lijst met de cursor in het zoekveld.
     await toonLijst();
+    // Terug van een boek: weer bij dat boek in de lijst, met het zoekwoord nog ingevuld.
+    const terugBij = vanBoek && document.querySelector(`#lijst [data-id="${vanBoek}"]`);
+    if (terugBij) return houdInBeeld(terugBij, { block: 'center' });
     const veld = document.getElementById('lijst-zoek');
     veld?.focus({ preventScroll: true });
     houdInBeeld(document.getElementById('lijst-kop'));

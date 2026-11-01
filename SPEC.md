@@ -29,3 +29,4 @@ en verfilmingen uit Wikipedia en Wikidata. Alles gratis.
 | 31 okt 2026 | De uitleg 'Zet op beginscherm' vraagt eerst 'Wat voor telefoon heb je?' (iPhone of iPad / Android, vooraf gekozen op wat de app herkent) en toont dan de passende stappen; bij Android ook een regel voor Samsung Internet |
 | 1 nov 2026 | Boven 'Toch verder in de browser' staat wat dat betekent: je boeken staan dan alleen in die browser, je ziet ze niet terug in de app op je beginscherm, Safari wist ze als je de site ongeveer een week niet opent, en in een privévenster is alles weg zodra je het sluit |
 | 1 nov 2026 | Kobo-check: titel over de volle breedte (hooguit twee regels), daaronder de knoppen Bekijk bij Kobo en Gedownload |
+| 1 nov 2026 | Een gezocht boek toevoegen als Gelezen opent meteen de boekpagina (sterren, recensie), net als bij een tip |

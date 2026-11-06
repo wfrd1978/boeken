@@ -37,3 +37,4 @@ en verfilmingen uit Wikipedia en Wikidata. Alles gratis.
 | 2 nov 2026 | Bij elke wijziging aan een boek (sterren, recensie, status…) gaat een verse kopie van het opgeslagen coverplaatje mee: Safari kon de cover anders soms niet meer lezen nadat het boek opnieuw was weggeschreven |
 | 6 nov 2026 | Zoeken in de lijst ook op genre (categorie) en reeks |
 | 6 nov 2026 | Een tik op Zoek, Toevoegen of Boeken in de balk onderin begint met een leeg zoekveld; terugswipen vanaf een boek houdt het zoekwoord vast |
+| 6 nov 2026 | Stijl 'strak' (keuze A van de eigenaar, in beide apps): strakke schreefloze letter voor koppen en titels, woordmerk en rubriekskopjes in vette hoofdletters, koeler lichtgrijs, dieper groen, warmer goud, hoekigere covers; donkere weergave ongewijzigd |

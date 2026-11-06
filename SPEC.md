@@ -35,3 +35,4 @@ en verfilmingen uit Wikipedia en Wikidata. Alles gratis.
 | 1 nov 2026 | Terugswipen: van een boek terug naar dat boek in de lijst (met zoekwoord), niet naar de zoekbalk; een gekozen zoekresultaat bij Toevoegen heeft een eigen adres (#/toevoegen/boek), zodat terugswipen bij de zoekresultaten uitkomt; na toevoegen wordt dat scherm vervangen, zodat terug niet bij een al toegevoegd boek uitkomt |
 | 1 nov 2026 | Laadt een opgeslagen cover leeg (Safari kan het plaatje soms niet lezen), dan toont de lijst de cover van internet in plaats van meteen de beginletter (de controle voor lege Biblion-plaatjes was hier te streng) |
 | 2 nov 2026 | Bij elke wijziging aan een boek (sterren, recensie, status…) gaat een verse kopie van het opgeslagen coverplaatje mee: Safari kon de cover anders soms niet meer lezen nadat het boek opnieuw was weggeschreven |
+| 6 nov 2026 | Zoeken in de lijst ook op genre (categorie) en reeks |

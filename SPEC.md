@@ -36,3 +36,4 @@ en verfilmingen uit Wikipedia en Wikidata. Alles gratis.
 | 1 nov 2026 | Laadt een opgeslagen cover leeg (Safari kan het plaatje soms niet lezen), dan toont de lijst de cover van internet in plaats van meteen de beginletter (de controle voor lege Biblion-plaatjes was hier te streng) |
 | 2 nov 2026 | Bij elke wijziging aan een boek (sterren, recensie, status…) gaat een verse kopie van het opgeslagen coverplaatje mee: Safari kon de cover anders soms niet meer lezen nadat het boek opnieuw was weggeschreven |
 | 6 nov 2026 | Zoeken in de lijst ook op genre (categorie) en reeks |
+| 6 nov 2026 | Een tik op Zoek, Toevoegen of Boeken in de balk onderin begint met een leeg zoekveld; terugswipen vanaf een boek houdt het zoekwoord vast |

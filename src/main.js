@@ -1,4 +1,6 @@
 import { lokaal } from './lokaal.js';
+import { maakDeelkaart } from './deelkaart.js';
+import { kleurVlakNaarCover } from './kleur.js';
 import './style.css';
 import {
   alleBoeken,
@@ -347,7 +349,7 @@ const SORTERINGEN = {
 };
 
 // Tabjes bovenaan de lijst, zoals in een nieuwsapp.
-const TABS = ['Alles', 'Bezig', 'Gelezen', 'Wil ik lezen'];
+const TABS = ['Alles', 'Bezig', 'Gelezen', 'Wil ik lezen', 'Gestopt'];
 
 // Waar het boek is: voor de labels in de lijst, de knoppen bij een boek en de Toon-keuze.
 // De sleutel 'kobo' blijft voor Wacht op Kobo Plus, zodat een bewaarde keuze blijft werken.
@@ -812,6 +814,7 @@ async function toonLijst() {
   document.querySelectorAll('[data-achtergrond]').forEach((el) => {
     el.style.backgroundImage = `url(${JSON.stringify(el.dataset.achtergrond)})`;
   });
+  document.querySelectorAll('.held').forEach((held) => kleurVlakNaarCover(held, held.querySelector('img.held-cover')));
   // Tips en nieuws komen van buiten; gaat daar iets mis, dan blijft de lijst gewoon werken.
   await toonTipsRij(boeken).catch(() => {});
   toonNieuws(boeken).catch(() => {});
@@ -916,10 +919,10 @@ function herinneringHtml() {
 
 function backupTekst() {
   const laatste = laatsteBackup();
-  if (!laatste) return 'Nog geen backup gemaakt.';
+  if (!laatste) return 'Nog geen backup';
   const dagen = dagenSindsBackup();
   const wanneer = dagen === 0 ? 'vandaag' : dagen === 1 ? 'gisteren' : `${dagen} dagen geleden`;
-  return `Laatste backup: ${laatste.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })} (${wanneer}).`;
+  return `Laatste: ${wanneer}`;
 }
 
 // Licht of donker. Het wisselen zelf gebeurt in thema.js, dat al laadt vóór de app.
@@ -962,7 +965,7 @@ function overDezeAppHtml() {
       </details>
       <details>
         <summary>Hoe leren de tips?</summary>
-        <p>Elke week komt er een nieuwe lijst tips; je ziet er 8 tegelijk. Tips uit de categorieën die je in je profiel koos, staan vooraan. Kies je Wil ik lezen of Al gelezen, dan komen tips uit die categorie hoger. Niet voor mij laat ze zakken. Je vijfsterrenboeken tellen een beetje mee.</p>
+        <p>Elke week komt er een nieuwe lijst tips; je ziet er 8 tegelijk. Tips uit de categorieën die je in je profiel koos, staan vooraan. Kies je Wil ik lezen of Al gelezen, dan komen tips uit die categorie hoger. Niet voor mij laat ze zakken. Je vijfsterrenboeken tellen een beetje mee; een boek dat je niet uitlas, zet tips van die schrijver achteraan.</p>
         ${metKoboPlus() ? '<p>Omdat je Kobo Plus hebt, zie je ook de rij Nieuw in Kobo Plus. Die titels komen uit berichten van uitgevers en boekhandels; de app kan Kobo zelf niet controleren, dus kijk even in de Kobo-app.</p>' : ''}
       </details>
       <details>
@@ -989,22 +992,28 @@ async function toonInstellingen() {
       <h1>Instellingen</h1>
     </header>
 
-    <section class="blok">
-      <h2>Backup</h2>
-      <p>Je boeken staan alleen op deze telefoon. Bewaar regelmatig een backup in iCloud Drive: kies in het deelmenu <b>Bewaar in Bestanden</b>.</p>
-      <p class="zacht" id="backup-status">${backupTekst()}</p>
-      <button class="hoofdknop" id="backup-maken"${aantal ? '' : ' disabled'}>Backup maken</button>
-      <label class="tweede-knop bestand-knop">Backup terugzetten
-        <input type="file" id="backup-bestand" accept="application/json,.json" hidden />
-      </label>
+    <section class="blok" id="backup-blok">
+      <div class="blok-kop"><h2>Backup</h2><span class="zacht" id="backup-status">${backupTekst()}</span></div>
+      <div class="knoppen-rij">
+        <button class="hoofdknop" id="backup-maken"${aantal ? '' : ' disabled'}>Backup maken</button>
+        <label class="tweede-knop bestand-knop">Terugzetten
+          <input type="file" id="backup-bestand" accept="application/json,.json" hidden />
+        </label>
+      </div>
       <div id="terugzet-vak"></div>
-      <div class="verhuis" id="verhuis"></div>
+      <details class="uitleg">
+        <summary>Hoe werkt het en wat zit erin?</summary>
+        <p>Je boeken staan alleen op deze telefoon. Bewaar regelmatig een backup in iCloud Drive: kies in het deelmenu <b>Bewaar in Bestanden</b>.</p>
+        <div class="verhuis" id="verhuis"></div>
+      </details>
     </section>
 
     <section class="blok">
-      <h2>Excel-export</h2>
+      <details class="inklap">
+      <summary><h2>Excel-export</h2></summary>
       <p>Je hele lijst als Excel-bestand, met sterren, leesdata en recensies. Handig om te bewaren, te delen of op je laptop te bekijken.</p>
       <button class="tweede-knop" id="export"${aantal ? '' : ' disabled'}>Maak Excel-bestand</button>
+      </details>
     </section>
 
     <section class="blok">
@@ -1023,21 +1032,21 @@ async function toonInstellingen() {
     ${
       metKoboPlus()
         ? `<section class="blok">
-      <h2>Kobo-check</h2>
-      <p>Eens per maand loop je na welke boeken die wachten op Kobo Plus nu te downloaden zijn. Je krijgt daarvoor een seintje op het startscherm.</p>
-      <a class="tweede-knop" href="#/kobo">Open de Kobo-check</a>
+      <a class="blok-link" href="#/kobo"><h2>Kobo-check</h2><span class="zacht">Kobo Plus nalopen</span></a>
     </section>`
         : ''
     }
 
     <section class="blok">
-      <h2>Weergave</h2>
+      <details class="inklap">
+      <summary><h2>Weergave</h2><span class="zacht" id="weergave-nu">${veilig(WEERGAVEN[weergave()] ?? '')}</span></summary>
       <div class="keuzes" id="weergave">
         ${Object.entries(WEERGAVEN)
           .map(([k, naam]) => `<button class="keuze${k === weergave() ? ' actief' : ''}" data-weergave="${k}">${naam}</button>`)
           .join('')}
       </div>
       <p class="zacht klein">Donker 's avonds: van 20:00 tot 7:00 donker, en altijd als je iPhone op donker staat.</p>
+      </details>
     </section>
 
     ${overDezeAppHtml()}
@@ -1091,6 +1100,7 @@ async function toonInstellingen() {
     }
     window.boekenThema?.toepassen();
     document.querySelectorAll('#weergave .keuze').forEach((k) => k.classList.toggle('actief', k === knop));
+    document.getElementById('weergave-nu').textContent = WEERGAVEN[knop.dataset.weergave] ?? '';
   });
 
   const telling = await coverTelling();
@@ -2472,6 +2482,66 @@ async function toonToevoegTips(verversen = true) {
 
 // --- Cover kiezen ---
 
+// Delen: eerst een voorbeeld van de deelkaart, dan kiezen tussen de afbeelding of de tekst.
+function toonDeelkaart(boek, recensie) {
+  document.body.insertAdjacentHTML(
+    'beforeend',
+    `<div class="laag" id="deel-laag">
+       <div class="laag-blad">
+         <div class="laag-kop"><h2>Delen</h2><button class="link-knop" id="laag-sluit">Sluiten</button></div>
+         <div class="deelkaart-vak" id="deelkaart-vak"><p class="zacht">Kaart maken…</p></div>
+         <button class="hoofdknop" id="deel-beeld" disabled>Deel als afbeelding</button>
+         <button class="tweede-knop" id="deel-tekst">Deel als tekst</button>
+       </div>
+     </div>`
+  );
+  const laag = document.getElementById('deel-laag');
+  let adres = '';
+  const sluit = () => {
+    laag.remove();
+    if (adres) URL.revokeObjectURL(adres);
+  };
+  document.getElementById('laag-sluit').addEventListener('click', sluit);
+  laag.addEventListener('click', (e) => e.target === laag && sluit());
+
+  let bestand = null;
+  maakDeelkaart(boek, recensie, document.querySelector('#cover-vak img'))
+    .then((blob) => {
+      if (!laag.isConnected) return;
+      const naam = `${(boek.titel || 'boek').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '').toLowerCase() || 'boek'}.jpg`;
+      bestand = new File([blob], naam, { type: 'image/jpeg' });
+      adres = URL.createObjectURL(blob);
+      document.getElementById('deelkaart-vak').innerHTML = `<img class="deelkaart" src="${adres}" alt="Deelkaart van ${veilig(boek.titel)}" />`;
+      document.getElementById('deel-beeld').disabled = false;
+    })
+    .catch(() => {
+      document.getElementById('deelkaart-vak').innerHTML = '<p class="zacht">De kaart maken lukte niet. Delen als tekst kan wel.</p>';
+    });
+
+  document.getElementById('deel-beeld').addEventListener('click', async () => {
+    if (!bestand) return;
+    if (navigator.canShare?.({ files: [bestand] })) {
+      try {
+        await navigator.share({ files: [bestand] });
+        sluit();
+      } catch (e) {
+        if (e.name !== 'AbortError') melding('Delen lukt hier niet');
+      }
+    } else {
+      melding('Houd de afbeelding vast en kies Bewaar of Deel');
+    }
+  });
+  document.getElementById('deel-tekst').addEventListener('click', async () => {
+    try {
+      const uit = await deelBoek(deelTekst(boek, recensie, { kobo: metKobo() }));
+      if (uit === 'gekopieerd') melding('Tekst gekopieerd. Plak hem waar je wilt.');
+      if (uit !== 'geannuleerd') sluit();
+    } catch {
+      melding('Delen lukt hier niet');
+    }
+  });
+}
+
 async function toonCoverKeuze(boek, bewaar, klaar) {
   document.body.insertAdjacentHTML(
     'beforeend',
@@ -2653,21 +2723,31 @@ async function toonBoek(id) {
   };
 
   app.innerHTML = `
-    <header class="kop">
-      <a class="terug" href="#/">‹ Boeken</a>
-      <button class="link-knop deel-knop" id="deel" aria-label="Deel dit boek">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l4 4-1.4 1.4L13 6.8V15h-2V6.8L9.4 8.4 8 7zM5 11h3v2H7v6h10v-6h-1v-2h3v10H5z" /></svg>
-        Deel
-      </button>
-    </header>
-    <section class="bevestig">
+    <div class="boek-kop">
+      <header class="kop">
+        <a class="terug" href="#/">‹ Boeken</a>
+        <button class="link-knop deel-knop" id="deel" aria-label="Deel dit boek">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l4 4-1.4 1.4L13 6.8V15h-2V6.8L9.4 8.4 8 7zM5 11h3v2H7v6h10v-6h-1v-2h3v10H5z" /></svg>
+        </button>
+        <details class="boek-menu">
+          <summary aria-label="Meer">⋯</summary>
+          <div class="boek-menu-lijst">
+            <button class="link-knop" id="cover-kiezen">Kies een cover</button>
+            <label class="link-knop">Eigen foto<input type="file" accept="image/*" id="cover-foto" hidden /></label>
+          </div>
+        </details>
+      </header>
       <div id="cover-vak">${coverHtml(boek, 'cover-groot')}</div>
-      <div class="cover-knoppen">
-        <button class="link-knop" id="cover-kiezen">Kies een cover</button>
-        <label class="link-knop">Eigen foto<input type="file" accept="image/*" id="cover-foto" hidden /></label>
-      </div>
       <h2>${veilig(boek.titel)}</h2>
-      <p>${veilig(auteurTekst(boek))}</p>
+      <p class="boek-kop-auteur">${veilig(auteurTekst(boek))}</p>
+    </div>
+    <section class="bevestig">
+      <div class="snel-oordeel">
+        <div class="sterren" id="sterren" role="radiogroup" aria-label="Sterren"></div>
+        <div class="keuzes" id="statussen">
+          ${STATUSSEN.map((s) => `<button class="keuze" data-s="${s}">${statusNaam(s)}</button>`).join('')}
+        </div>
+      </div>
       <p class="details">${[boek.uitgever, boek.jaar, boek.paginas && `${boek.paginas} blz.`, boek.isbn && `ISBN ${boek.isbn}`]
         .filter(Boolean)
         .map(veilig)
@@ -2685,9 +2765,6 @@ async function toonBoek(id) {
 
       <div class="schrijver" id="schrijver" hidden></div>
 
-      <p class="label">Mijn oordeel</p>
-      <div class="sterren" id="sterren" role="radiogroup" aria-label="Sterren"></div>
-
       <p class="label">Recensie</p>
       <textarea id="recensie" rows="6" placeholder="Wat vond je ervan?">${veilig(boek.recensie)}</textarea>
       <div class="recensie-regel">
@@ -2697,11 +2774,6 @@ async function toonBoek(id) {
       <p class="label">Gelezen als</p>
       <div class="keuzes" id="leesvorm">
         ${Object.entries(LEESVORMEN).map(([k, naam]) => `<button class="keuze" data-vorm="${k}">${naam}</button>`).join('')}
-      </div>
-
-      <p class="label">Status</p>
-      <div class="keuzes" id="statussen">
-        ${STATUSSEN.map((s) => `<button class="keuze" data-s="${s}">${statusNaam(s)}</button>`).join('')}
       </div>
 
       <p class="label">Gelezen op</p>
@@ -2732,6 +2804,9 @@ async function toonBoek(id) {
       <button class="verwijder" id="verwijder">Boek verwijderen</button>
     </section>
   `;
+
+  const kleurBoekKop = () => kleurVlakNaarCover(document.querySelector('.boek-kop'), document.querySelector('#cover-vak img'));
+  kleurBoekKop();
 
   // Reeks: één regel, de delen uit je lijst als kleine knopjes, en zelf aan te passen.
   const reeksVak = document.getElementById('reeks');
@@ -2821,14 +2896,9 @@ async function toonBoek(id) {
     vak.hidden = false;
   })();
 
-  document.getElementById('deel').addEventListener('click', async () => {
+  document.getElementById('deel').addEventListener('click', () => {
     // De recensie zoals hij nu in het vak staat, ook als hij nog niet bewaard is.
-    const tekst = deelTekst(boek, document.getElementById('recensie').value, { kobo: metKobo() });
-    try {
-      if ((await deelBoek(tekst)) === 'gekopieerd') melding('Tekst gekopieerd. Plak hem waar je wilt.');
-    } catch {
-      melding('Delen lukt hier niet');
-    }
+    toonDeelkaart(boek, document.getElementById('recensie').value);
   });
 
   const synopsisVak = document.getElementById('synopsis');
@@ -2845,7 +2915,12 @@ async function toonBoek(id) {
 
   const toonNieuweCover = () => {
     document.getElementById('cover-vak').innerHTML = coverHtml(boek, 'cover-groot');
+    kleurBoekKop();
   };
+  // Het ⋯-menu gaat dicht na een keuze of een tik ernaast.
+  const menu = document.querySelector('.boek-menu');
+  menu.addEventListener('click', (e) => { if (e.target.closest('.boek-menu-lijst')) menu.open = false; });
+  document.addEventListener('click', (e) => { if (menu.open && !menu.contains(e.target)) menu.open = false; });
   document.getElementById('cover-kiezen').addEventListener('click', () => toonCoverKeuze(boek, bewaar, toonNieuweCover));
   document.getElementById('cover-foto').addEventListener('change', async (e) => {
     const bestand = e.target.files?.[0];

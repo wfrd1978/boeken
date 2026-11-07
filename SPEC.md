@@ -38,3 +38,4 @@ en verfilmingen uit Wikipedia en Wikidata. Alles gratis.
 | 6 nov 2026 | Zoeken in de lijst ook op genre (categorie) en reeks |
 | 6 nov 2026 | Een tik op Zoek, Toevoegen of Boeken in de balk onderin begint met een leeg zoekveld; terugswipen vanaf een boek houdt het zoekwoord vast |
 | 6 nov 2026 | Stijl 'strak' (keuze A van de eigenaar, in beide apps): strakke schreefloze letter voor koppen en titels, woordmerk en rubriekskopjes in vette hoofdletters, koeler lichtgrijs, dieper groen, warmer goud, hoekigere covers; donkere weergave ongewijzigd |
+| 7 nov 2026 | Nieuw logo, hetzelfde als de boeken-app (keuze van de eigenaar): een open boek in wit met een gouden boekenlegger op diep groen. Nieuwe bestandsnamen (…-c.png); bron public/icons/logo.svg. Een icoon dat al op het beginscherm staat, verandert op de iPhone pas als je de app opnieuw op het beginscherm zet |

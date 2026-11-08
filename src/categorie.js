@@ -1,5 +1,6 @@
 // Een voorstel voor de categorie van een nieuw boek. de keuze blijft vrij; dit is alleen een hulp.
 import { kaal } from './dubbel.js';
+import { CATEGORIEEN } from './db.js';
 
 // Woorden uit de onderwerpen van Google Books en Open Library (Engels en Nederlands).
 const HINTS = [
@@ -30,4 +31,15 @@ export function raadCategorie(boek, mijnBoeken = []) {
     if (woorden.some((w) => onderwerpen.includes(w))) return categorie;
   }
   return '';
+}
+
+// Een categorie uit een Excel-cel herkennen, ook kort geschreven ('thriller', 'biografie').
+export function leesCategorie(waarde) {
+  const tekst = kaal(String(waarde ?? '')).trim();
+  if (!tekst) return '';
+  return (
+    CATEGORIEEN.find((c) => kaal(c) === tekst) ||
+    CATEGORIEEN.find((c) => kaal(c).split(/\s*&\s*/).includes(tekst)) ||
+    ''
+  );
 }

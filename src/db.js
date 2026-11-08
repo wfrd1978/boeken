@@ -65,7 +65,7 @@ export function alleBoeken() {
 const DATUM = /^\d{4}-\d{2}(-\d{2})?$/;
 
 // '2025-10' of '2025-10-14', en een datum die echt bestaat (geen 31 februari).
-function echteDatum(d) {
+export function echteDatum(d) {
   if (typeof d !== 'string' || !DATUM.test(d)) return false;
   const [j, m, dag = '1'] = d.split('-').map(Number);
   const datum = new Date(j, m - 1, dag);
@@ -175,6 +175,32 @@ export async function boekToevoegen(boek) {
   return id;
 }
 
+// Alle boeken uit een import in één keer: lukt het niet, dan wordt er niets toegevoegd.
+// Elk boek krijgt een eigen tijdstip, zodat de volgorde van het bestand bewaard blijft.
+export async function boekenImporteren(boeken) {
+  const nu = Date.now();
+  await db.boeken.bulkAdd(boeken.map((b, i) => nieuwBoek({ ...b, verrijkt: false }, new Date(nu - i).toISOString())));
+  telWijziging(boeken.length);
+}
+
+// Sterren of categorie aanvullen bij bestaande boeken, allemaal tegelijk: lukt het niet,
+// dan verandert er niets. Alleen lege velden worden gevuld, ook als er intussen iets veranderde.
+// Hoeveel delen een reeks heeft en wat het volgende deel is, verandert met de tijd:
+// die twee mag een nieuwe import bijwerken. Al het andere vult alleen lege velden.
+const BIJ_TE_WERKEN = ['reeksTotaal', 'reeksVolgende'];
+
+export function boekenAanvullen(lijst) {
+  return db.transaction('rw', db.boeken, () =>
+    Promise.all(
+      lijst.map(({ id, wijzigingen }) =>
+        db.boeken.where('id').equals(id).modify((b) => {
+          for (const [veld, waarde] of Object.entries(wijzigingen)) if (!b[veld] || BIJ_TE_WERKEN.includes(veld)) b[veld] = waarde;
+        })
+      )
+    )
+  );
+}
+
 // Eenmalig: boeken van vóór 'Gelezen als' krijgen het veld, met een voorstel uit de labels.
 // Alleen boeken die het veld nog helemaal niet hebben; een keuze blijft altijd staan.
 export function vulLeesvormAan() {
@@ -244,6 +270,18 @@ export function boekVerwijderen(id) {
 // Voor 'Ongedaan maken': zet een verwijderd boek precies terug, met hetzelfde id.
 export function boekTerugzetten(boek) {
   return db.boeken.put(boek);
+}
+
+// --- Leesanalyse: per maand alleen de tekst die Claude schreef (de cijfers rekent de app opnieuw uit) ---
+
+export async function haalLeesRapporten() {
+  return (await db.instellingen.get('leesrapporten'))?.waarde ?? {};
+}
+
+export async function bewaarLeesRapport(maand, tekst) {
+  const rapporten = await haalLeesRapporten();
+  rapporten[maand] = { tekst, gemaakt: new Date().toISOString() };
+  await db.instellingen.put({ sleutel: 'leesrapporten', waarde: rapporten });
 }
 
 // --- Profiel ---

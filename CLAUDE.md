@@ -44,7 +44,7 @@ en zet de bron in `reden`. Verzin geen samenvattingen: liever geen `synopsis` (d
 |------|------------------------|
 | 1 | ~~Kopie online op wfrd1978.github.io/boeken, naast de boeken-app~~ — getest en klaar (30 okt) |
 | 2 | ~~Welkomstscherm in vier stappen: naam en foto (niet verplicht), hoe je leest, e-reader en Kobo Plus, favoriete categorieën~~ — getest en klaar (30 okt) |
-| 3 | ~~Opruimen: profiel alleen naam en foto; recensiehulp, Excel-import en statistieken eruit; teksten herschreven~~ — getest en klaar (30 okt) |
+| 3 | ~~Opruimen: profiel alleen naam en foto; recensiehulp, Excel-import en statistieken eruit; teksten herschreven~~ — getest en klaar (30 okt). Op verzoek van de eigenaar zitten statistieken, maandanalyse, jaarterugblik, leesdoel, Excel-import en 'Over jou' met lezersprofiel er sinds 8 nov weer in (ter test); de recensiehulp blijft eruit |
 | 4 | ~~Tips per persoon gekozen uit één algemene lijst, plus rij 'Nieuw in Kobo Plus'; Kobo-onderdelen alleen bij een e-reader, Kobo Plus-onderdelen alleen bij Kobo Plus~~ — getest en klaar (30 okt) |
 | 5 | ~~Eigen Google-sleutel in een eigen project, beperkt tot wfrd1978.github.io (Safari stuurt alleen het domein mee)~~ — getest en klaar (31 okt) |
 | 6 | ~~Wekelijkse taak voor de algemene tips (`tips.json`), met proefrun~~ — getest en klaar (31 okt) |

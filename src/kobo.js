@@ -1,8 +1,8 @@
 // 'Wacht op Kobo Plus': een boek op de verlanglijst dat nog niet in het abonnement zit.
 import { eersteAuteur } from './dubbel.js';
 
-// Haalt "Kobo Plus: ja/nee" uit een opmerking (zo kan het in een teruggezette backup van de
-// boeken-app staan) en geeft de opgeschoonde opmerking terug.
+// Haalt "Kobo Plus: ja/nee" uit een opmerking (zo kan het in een Excel-lijst of in een
+// teruggezette backup van de boeken-app staan) en geeft de opgeschoonde opmerking terug.
 export function leesKoboOpmerking(opmerking = '') {
   const m = opmerking.match(/kobo plus:\s*(ja|nee)[^·]*/i);
   if (!m) return null;

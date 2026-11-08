@@ -82,6 +82,7 @@ export async function maakBackupBestand() {
     profielFoto: await fotoAlsTekst(),
     tipArchief: (await db.instellingen.get('tipArchief'))?.waarde ?? null,
     nieuwsArchief: (await db.instellingen.get('nieuwsArchief'))?.waarde ?? null,
+    leesrapporten: (await db.instellingen.get('leesrapporten'))?.waarde ?? null,
     voorkeuren: leesVoorkeuren(),
   };
   const datum = nu.toISOString().slice(0, 10);
@@ -180,18 +181,44 @@ export async function leesBackup(bestand) {
   return inhoud;
 }
 
+// Leesdoelen per jaar ('jjjj' → aantal boeken, 1 tot 999). Al het andere valt weg.
+export function schoneLeesdoelen(d) {
+  if (!d || typeof d !== 'object' || Array.isArray(d)) return {};
+  const schoon = {};
+  for (const [jaar, aantal] of Object.entries(d)) if (/^\d{4}$/.test(jaar) && Number.isInteger(aantal) && aantal >= 1 && aantal <= 999) schoon[jaar] = aantal;
+  return schoon;
+}
+
 export function schoonProfiel(p) {
   if (!p || typeof p !== 'object') return null;
   const tekst = (v) => (typeof v === 'string' ? v : '');
   const profiel = { naam: tekst(p.naam) };
+  // Staat een veld niet in de backup (bijvoorbeeld een oudere backup of een backup van de
+  // boeken-app), dan blijft wat je nu hebt staan.
+  // Over jou: over mij en het lezersprofiel (ook uit een backup van de boeken-app).
+  if (typeof p.overMij === 'string') profiel.overMij = p.overMij;
+  if (typeof p.lezersprofiel === 'string') profiel.lezersprofiel = p.lezersprofiel;
+  // Statistieken: vanaf welke maand ze tellen, en de leesdoelen per jaar.
+  if (/^\d{4}-\d{2}$/.test(p.statsVanaf)) profiel.statsVanaf = p.statsVanaf;
+  if (p.leesdoelen && typeof p.leesdoelen === 'object') profiel.leesdoelen = schoneLeesdoelen(p.leesdoelen);
   // Antwoorden van het welkomstscherm.
-  // Staat een keuze niet in de backup (bijvoorbeeld een backup van de boeken-app), dan blijft
-  // de huidige keuze staan.
   if (Array.isArray(p.leesvormen)) profiel.leesvormen = p.leesvormen.filter((x) => Object.hasOwn(LEESVORMEN, x));
   if (Array.isArray(p.categorieen)) profiel.categorieen = p.categorieen.filter((x) => CATEGORIEEN.includes(x));
   if (typeof p.ereader === 'boolean') profiel.ereader = p.ereader;
   if (typeof p.koboPlus === 'boolean') profiel.koboPlus = p.koboPlus;
   return profiel;
+}
+
+// Maand- en jaaranalyses: per maand ('jjjj-mm') of jaar ('jjjj') alleen de tekst van Claude en wanneer die kwam.
+export function schoneRapporten(r) {
+  if (!r || typeof r !== 'object' || Array.isArray(r)) return null;
+  const schoon = {};
+  for (const [maand, v] of Object.entries(r)) {
+    if (/^\d{4}(-\d{2})?$/.test(maand) && typeof v?.tekst === 'string' && v.tekst.trim()) {
+      schoon[maand] = { tekst: v.tekst.slice(0, 20000), gemaakt: typeof v.gemaakt === 'string' ? v.gemaakt : '' };
+    }
+  }
+  return schoon;
 }
 
 function schoneReacties(r) {
@@ -224,6 +251,7 @@ export async function zetBackupTerug(inhoud) {
   const profiel = schoonProfiel(inhoud.profiel);
   const reacties = schoneReacties(inhoud.tipReacties);
   const archief = schoonArchief(inhoud.tipArchief);
+  const rapporten = schoneRapporten(inhoud.leesrapporten);
   const nieuws = Array.isArray(inhoud.nieuwsArchief) ? inhoud.nieuwsArchief.map(normaliseerBericht).filter(Boolean) : null;
   const foto =
     typeof inhoud.profielFoto === 'string' && inhoud.profielFoto.startsWith('data:image/') ? await tekstNaarBlob(inhoud.profielFoto) : null;
@@ -241,6 +269,8 @@ export async function zetBackupTerug(inhoud) {
     if (foto) await db.instellingen.put({ sleutel: 'profielFoto', waarde: foto });
     if (archief) await db.instellingen.put({ sleutel: 'tipArchief', waarde: archief });
     if (nieuws) await db.instellingen.put({ sleutel: 'nieuwsArchief', waarde: nieuws });
+    // Een backup zonder maand- en jaaranalyses laat de huidige staan.
+    if (rapporten) await db.instellingen.put({ sleutel: 'leesrapporten', waarde: rapporten });
   });
   zetVoorkeuren(inhoud.voorkeuren);
   try {

@@ -23,6 +23,10 @@ import {
   bewaarProfiel,
   haalProfielFoto,
   bewaarProfielFoto,
+  haalLeesRapporten,
+  bewaarLeesRapport,
+  boekenImporteren,
+  boekenAanvullen,
 } from './db.js';
 import {
   MIN_COVER_BREEDTE,
@@ -66,6 +70,25 @@ import {
   zetBackupTerug,
 } from './backup.js';
 import { maakExcel, deelBestand } from './exporteren.js';
+import { leesExcel, planImport } from './importeren.js';
+import { berekenStatistieken, huidigeMaand, geldigeStartmaand } from './statistieken.js';
+import {
+  maandRapport,
+  rapportOpdracht,
+  profielOpdracht,
+  vorigeMaand,
+  maandNaam,
+  gelezenIn,
+  maandenMetLezen,
+  geldigeMaand,
+  MAX_ADRES,
+  claudeAdres,
+  jaarRapport,
+  jaarOpdracht,
+  terugblikJaar,
+  jarenMetLezen,
+  geldigJaar,
+} from './analyse.js';
 import {
   coverZelfGekozen,
   verrijkAlles,
@@ -631,6 +654,270 @@ function koboSeintjeHtml(boeken) {
     </div>`;
 }
 
+// --- Leesanalyse ---
+// De eerste tien dagen van een maand vraagt het startscherm of je de analyse van de vorige
+// maand wilt zien. 'Later' = over drie dagen weer; na het openen niet meer voor die maand.
+const ANALYSE_DAGEN = 10;
+const ANALYSE_LATER_DAGEN = 3;
+
+function analyseKaartHtml(boeken) {
+  const nu = new Date();
+  if (nu.getDate() > ANALYSE_DAGEN) return '';
+  const maand = vorigeMaand(huidigeMaand(nu));
+  if (!gelezenIn(boeken, maand).length) return '';
+  try {
+    if (lokaal.getItem('analyseGezien') === maand) return '';
+  } catch {
+    // Geen opslag: dan gewoon tonen.
+  }
+  if (dagenGeleden(leesDatum('analyseLater')) < ANALYSE_LATER_DAGEN) return '';
+  return `
+    <div class="herinnering" id="analyse-kaart">
+      <p><strong>Je leesmaand ${maandNaam(maand, false)}</strong><br />Wil je de analyse zien?</p>
+      <div class="herinnering-knoppen">
+        <a href="#/analyse/${maand}">Ja, laat zien</a>
+        <button class="link-knop" id="analyse-later">Later</button>
+      </div>
+    </div>`;
+}
+
+// In december en januari: de vraag of je terug wilt kijken op je leesjaar.
+function jaarKaartHtml(boeken) {
+  const jaar = terugblikJaar();
+  if (!jaar || !jaarRapport(boeken, jaar).aantal) return '';
+  try {
+    if (lokaal.getItem('jaarGezien') === jaar) return '';
+  } catch {
+    // Geen opslag: dan gewoon tonen.
+  }
+  if (dagenGeleden(leesDatum('jaarLater')) < ANALYSE_LATER_DAGEN) return '';
+  return `
+    <div class="herinnering" id="jaar-kaart">
+      <p><strong>Je leesjaar ${jaar}</strong><br />Wil je terugkijken op wat je dit jaar las?</p>
+      <div class="herinnering-knoppen">
+        <a href="#/jaar/${jaar}">Ja, laat zien</a>
+        <button class="link-knop" id="jaar-later">Later</button>
+      </div>
+    </div>`;
+}
+
+// Venster om Claude (in je eigen Claude-app) iets te laten schrijven en de tekst terug te plakken.
+// De app zelf praat met geen enkele AI-dienst: pas als je op Open Claude tikt, gaat de opdracht mee.
+function toonClaudeHulp({ kop, uitleg, opdracht, plakKnop, opPlak }) {
+  document.body.insertAdjacentHTML(
+    'beforeend',
+    `<div class="laag" id="claude-laag">
+       <div class="laag-blad">
+         <div class="laag-kop"><h2>${veilig(kop)}</h2><button class="link-knop" id="laag-sluit">Sluiten</button></div>
+         <p class="zacht">${veilig(uitleg)}</p>
+         <button class="hoofdknop" id="claude-open">Open Claude</button>
+         <p class="zacht klein">De opdracht wordt ook gekopieerd. Staat hij niet vanzelf in Claude, plak hem daar dan zelf.</p>
+         <button class="tweede-knop" id="claude-plak">${veilig(plakKnop)}</button>
+         <p class="zacht klein">Kopieer in Claude de tekst, kom terug naar deze app en tik hierboven.</p>
+       </div>
+     </div>`
+  );
+  const laag = document.getElementById('claude-laag');
+  const sluit = () => laag.remove();
+  document.getElementById('laag-sluit').addEventListener('click', sluit);
+  laag.addEventListener('click', (e) => e.target === laag && sluit());
+  document.getElementById('claude-open').addEventListener('click', () => {
+    // Een heel lange opdracht past niet in een adres: dan alleen kopiëren en zelf plakken.
+    const adres = claudeAdres(opdracht);
+    window.open(adres.length <= MAX_ADRES ? adres : 'https://claude.ai/new', '_blank', 'noopener');
+    navigator.clipboard?.writeText(opdracht).catch(() => {});
+    if (adres.length > MAX_ADRES) melding('De opdracht is lang: plak hem zelf in Claude (hij is gekopieerd)');
+  });
+  document.getElementById('claude-plak').addEventListener('click', async () => {
+    let tekst = '';
+    try {
+      tekst = (await navigator.clipboard.readText()).trim();
+    } catch {
+      // Geen toestemming: dan niets.
+    }
+    if (!tekst) return melding('Kopieer eerst de tekst in Claude');
+    if (tekst === opdracht.trim()) return melding('Op het klembord staat nog de opdracht. Kopieer eerst de tekst in Claude.');
+    sluit();
+    await opPlak(tekst);
+  });
+}
+
+function alineasHtml(tekst) {
+  return tekst
+    .split(/\n\s*\n|\n/)
+    .map((a) => a.trim())
+    .filter(Boolean)
+    .map((a) => `<p>${veilig(a)}</p>`)
+    .join('');
+}
+
+async function toonAnalyse(maand) {
+  const nr = schermNr;
+  ruimCoversOp();
+  const [boeken, rapporten] = await Promise.all([alleBoeken(), haalLeesRapporten()]);
+  if (nr !== schermNr) return;
+  try {
+    if (maand === vorigeMaand(huidigeMaand())) lokaal.setItem('analyseGezien', maand);
+  } catch {
+    // Niet erg.
+  }
+  const r = maandRapport(boeken, maand);
+  const tekst = rapporten[maand]?.tekst ?? '';
+  const n = (x, een, meer) => `${x} ${x === 1 ? een : meer}`;
+  const komma = (x) => x.toLocaleString('nl-NL', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const tempo = (() => {
+    const gem = r.gemiddeldEerder;
+    const vergelijk = r.aantal > gem + 0.5 ? 'meer dan' : r.aantal < gem - 0.5 ? 'minder dan' : 'ongeveer evenveel als';
+    const [j, m] = maand.split('-');
+    return `Dat is ${vergelijk} in de drie maanden ervoor (gemiddeld ${komma(gem)}). In ${maandNaam(`${Number(j) - 1}-${m}`)} las je er ${r.vorigJaar}.`;
+  })();
+  app.innerHTML = `
+    <header class="kop">
+      <a class="terug" href="#/profiel">‹ Profiel</a>
+      <h1>Je leesmaand</h1>
+    </header>
+    <p class="analyse-maand">${veilig(maandNaam(maand))}</p>
+    ${
+      !r.aantal
+        ? '<p class="leeg">In deze maand heb je geen boek uitgelezen (of er staat geen leesdatum bij).</p>'
+        : `
+    <section class="statistieken">
+      <div class="tegels">
+        <div class="tegel"><strong>${r.aantal}</strong><span>${r.aantal === 1 ? 'boek' : 'boeken'}</span></div>
+        <div class="tegel"><strong>${r.bladzijden || '–'}</strong><span>bladzijden</span></div>
+        <div class="tegel"><strong>${r.sterren ? `${komma(r.sterren)}<small>★</small>` : '–'}</strong><span>gemiddeld</span></div>
+      </div>
+      <p class="zacht">${veilig(tempo)}</p>
+
+      ${
+        tekst
+          ? `<h2 class="stat-kop">Het verhaal van je maand</h2><div class="analyse-tekst">${alineasHtml(tekst)}</div>
+             <button class="link-knop" id="analyse-claude">Opnieuw laten schrijven door Claude</button>`
+          : `<button class="tweede-knop" id="analyse-claude">Laat Claude er een verhaal van maken</button>`
+      }
+
+      <h2 class="stat-kop">Wat je las</h2>
+      <ul class="analyse-boeken">${r.boeken
+        .map((b) => `<li><strong>${veilig(b.titel)}</strong> <span class="zacht">${veilig(b.auteurs.join(', '))}${b.sterren ? ` · ${'★'.repeat(b.sterren)}` : ''}</span></li>`)
+        .join('')}</ul>
+
+      <h2 class="stat-kop">Genres</h2>
+      ${stavenHtml(r.categorieen.map((c) => ({ label: c.naam, aantal: c.aantal })))}
+      ${r.vormen.length ? `<h2 class="stat-kop">Gelezen als</h2>${stavenHtml(r.vormen.map((v) => ({ label: v.naam, aantal: v.aantal })))}` : ''}
+
+      ${
+        r.beste || r.zinnen.length
+          ? `<h2 class="stat-kop">Hoogtepunten</h2>
+             ${r.beste ? `<p>Je beste boek: <strong>${veilig(r.beste.titel)}</strong> van ${veilig(r.beste.auteurs.join(', '))} (${'★'.repeat(r.beste.sterren)}).</p>` : ''}
+             ${r.zinnen.map((z) => `<blockquote class="analyse-zin">"${veilig(z.zin)}"<span>${veilig(z.titel)}</span></blockquote>`).join('')}`
+          : ''
+      }
+
+      <h2 class="stat-kop">Schrijvers en reeksen</h2>
+      <p>${((meer) => (meer.length ? `Meest gelezen: ${meer.map((s) => `${veilig(s.naam)} (${s.aantal})`).join(', ')}.` : ''))(r.schrijvers.filter((s) => s.aantal > 1))}
+      ${r.nieuweSchrijvers.length ? `<br />Nieuw voor jou: ${r.nieuweSchrijvers.map(veilig).join(', ')}.` : ''}</p>
+      ${r.reeksen.length ? `<p>Verder in een reeks: ${r.reeksen.map((x) => `${veilig(x.reeks)}${x.deel ? ` (deel ${x.deel})` : ''}`).join(', ')}.</p>` : ''}
+    </section>`
+    }
+    <p class="zacht klein">Eerdere maanden vind je op je profielpagina.</p>
+  `;
+  document.getElementById('analyse-claude')?.addEventListener('click', () =>
+    toonClaudeHulp({
+      kop: `Je leesmaand ${maandNaam(maand, false)}`,
+      uitleg: 'Claude maakt van de cijfers en je boeken een korte, persoonlijke terugblik. Die plak je hier terug; hij wordt bij deze maand bewaard.',
+      opdracht: rapportOpdracht(r),
+      plakKnop: 'Plak de terugblik van Claude',
+      opPlak: async (tekst) => {
+        await bewaarLeesRapport(maand, tekst);
+        melding('Terugblik bewaard');
+        if (location.hash === `#/analyse/${maand}`) toonAnalyse(maand);
+      },
+    })
+  );
+}
+
+async function toonJaar(jaar) {
+  const nr = schermNr;
+  ruimCoversOp();
+  const [boeken, rapporten, profiel] = await Promise.all([alleBoeken(), haalLeesRapporten(), haalProfiel()]);
+  if (nr !== schermNr) return;
+  try {
+    if (jaar === terugblikJaar()) lokaal.setItem('jaarGezien', jaar);
+  } catch {
+    // Niet erg.
+  }
+  const r = jaarRapport(boeken, jaar);
+  const tekst = rapporten[jaar]?.tekst ?? '';
+  const komma = (x) => x.toLocaleString('nl-NL', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const lopend = jaar === String(new Date().getFullYear()) && new Date().getMonth() < 11;
+  const metId = (lijst) => lijst.map((b) => boeken.find((x) => x.id === b.id)).filter(Boolean);
+  const kortMaand = (m) => ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'][Number(m.slice(5, 7)) - 1];
+  app.innerHTML = `
+    <header class="kop">
+      <a class="terug" href="#/profiel">‹ Profiel</a>
+      <h1>Je leesjaar</h1>
+    </header>
+    <p class="analyse-maand">${veilig(jaar)}${lopend ? ' <span class="tot-nu">tot nu toe</span>' : ''}</p>
+    ${
+      !r.aantal
+        ? '<p class="leeg">In dit jaar heb je geen boek uitgelezen (of er staat geen leesdatum bij).</p>'
+        : `
+    <section class="statistieken">
+      <div class="tegels">
+        <div class="tegel"><strong>${r.aantal}</strong><span>${r.aantal === 1 ? 'boek' : 'boeken'}</span></div>
+        <div class="tegel"><strong>${r.bladzijden ? r.bladzijden.toLocaleString('nl-NL') : '–'}</strong><span>bladzijden</span></div>
+        <div class="tegel"><strong>${r.sterren ? `${komma(r.sterren)}<small>★</small>` : '–'}</strong><span>gemiddeld</span></div>
+      </div>
+      <p class="zacht">${r.vorigJaar ? `In ${Number(jaar) - 1} las je er ${r.vorigJaar}. ` : ''}${r.drukste?.aantal ? `Je las het meest in ${veilig(maandNaam(r.drukste.maand, false))} (${r.drukste.aantal}).` : ''}${
+        ((doel) => (doel ? ` ${r.aantal >= doel ? `Je leesdoel van ${doel} boeken heb je gehaald.` : `Je leesdoel was ${doel} boeken.`}` : ''))(profiel.leesdoelen?.[jaar])
+      }</p>
+
+      ${
+        tekst
+          ? `<h2 class="stat-kop">Het verhaal van je jaar</h2><div class="analyse-tekst">${alineasHtml(tekst)}</div>
+             <button class="link-knop" id="jaar-claude">Opnieuw laten schrijven door Claude</button>`
+          : `<button class="tweede-knop" id="jaar-claude">Laat Claude er een verhaal van maken</button>`
+      }
+
+      <h2 class="stat-kop">Per maand</h2>
+      ${stavenHtml(r.perMaand.map((m) => ({ label: kortMaand(m.maand), aantal: m.aantal })))}
+    </section>
+    ${rijHtml(r.vijfSterren.length ? 'Je vijfsterrenboeken' : 'Je beste boeken', metId(r.vijfSterren.length ? r.vijfSterren : r.beste), 'Gelezen')}
+    <section class="statistieken">
+      ${
+        r.zinnen.length
+          ? `<h2 class="stat-kop">Uit je recensies</h2>
+             ${r.zinnen.map((z) => `<blockquote class="analyse-zin">"${veilig(z.zin)}"<span>${veilig(z.titel)}</span></blockquote>`).join('')}`
+          : ''
+      }
+      <h2 class="stat-kop">Genres</h2>
+      ${stavenHtml(r.categorieen.map((c) => ({ label: c.naam, aantal: c.aantal })))}
+      ${r.vormen.length ? `<h2 class="stat-kop">Gelezen als</h2>${stavenHtml(r.vormen.map((v) => ({ label: v.naam, aantal: v.aantal })))}` : ''}
+
+      <h2 class="stat-kop">Schrijvers</h2>
+      ${((meer) => (meer.length ? `<p>Meest gelezen: ${meer.map((x) => `${veilig(x.naam)} (${x.aantal})`).join(', ')}.</p>` : ''))(r.schrijvers.filter((x) => x.aantal > 1))}
+      ${r.nieuweSchrijvers.length ? `<p>${r.nieuweSchrijvers.length === 1 ? 'Eén schrijver' : `${r.nieuweSchrijvers.length} schrijvers`} nieuw voor jou${r.nieuweSchrijvers.length <= 8 ? `: ${r.nieuweSchrijvers.map(veilig).join(', ')}` : ''}.</p>` : ''}
+      ${r.langste ? `<p>Je dikste boek: <strong>${veilig(r.langste.titel)}</strong> (${r.langste.paginas} bladzijden).</p>` : ''}
+    </section>`
+    }
+  `;
+  // De rij covers hoort hier niet bij een tab in de lijst: dan ook geen 'Alles ›'.
+  app.querySelectorAll('.rij-kop .link-knop').forEach((k) => k.remove());
+  document.getElementById('jaar-claude')?.addEventListener('click', () =>
+    toonClaudeHulp({
+      kop: `Je leesjaar ${jaar}`,
+      uitleg: 'Claude maakt van de cijfers en je boeken een persoonlijke terugblik op je jaar. Die plak je hier terug; hij wordt bij dit jaar bewaard.',
+      opdracht: jaarOpdracht(r),
+      plakKnop: 'Plak de terugblik van Claude',
+      opPlak: async (t) => {
+        await bewaarLeesRapport(jaar, t);
+        melding('Terugblik bewaard');
+        if (location.hash === `#/jaar/${jaar}`) toonJaar(jaar);
+      },
+    })
+  );
+}
+
 async function toonKoboCheck() {
   const nr = schermNr;
   ruimCoversOp();
@@ -699,6 +986,8 @@ function startHtml(boeken, naam) {
   return `
     <section class="start">
       <p class="groet">${veilig(deel)}<span>${datum}</span></p>
+      ${jaarKaartHtml(boeken)}
+      ${analyseKaartHtml(boeken)}
       ${metKoboPlus() ? koboSeintjeHtml(boeken) : ''}
       ${
         nu.length
@@ -778,6 +1067,14 @@ async function toonLijst() {
   `;
   if (!boeken.length) return;
 
+  document.getElementById('jaar-later')?.addEventListener('click', () => {
+    zetDatum('jaarLater');
+    document.getElementById('jaar-kaart')?.remove();
+  });
+  document.getElementById('analyse-later')?.addEventListener('click', () => {
+    zetDatum('analyseLater');
+    document.getElementById('analyse-kaart')?.remove();
+  });
   document.getElementById('kobo-later')?.addEventListener('click', () => {
     zetDatum('koboLater');
     document.getElementById('kobo-seintje')?.remove();
@@ -955,10 +1252,11 @@ function overDezeAppHtml() {
         <p>De boekentips komen uit een openbare lijst op de site van de app, die elke week wordt vernieuwd. Welke tips je ziet, kiest de app op je telefoon zelf, op basis van wat je graag leest. Wat je met een tip doet, blijft op je telefoon.</p>
         <p>Het boekennieuws komt, net als de tips, uit een openbare lijst; elke ochtend komen er een of twee berichten bij, in het Nederlands samengevat. Alle berichten blijven op je telefoon bewaard. Of een bericht over een schrijver uit je lijst gaat, bekijkt de app op je telefoon zelf.</p>
         <p>Delen gaat alleen als jij op Deel tikt, en dan via het gewone deelmenu van je iPhone.</p>
+        <p>Statistieken, leesanalyse, jaarterugblik en leesdoel: de cijfers rekent de app zelf uit, op je telefoon. Wil je er een verhaal van, of een leesprofiel, dan kan Claude dat schrijven. Pas als jij op Open Claude tikt, gaan je titels, schrijvers, categorieën, sterren en een paar zinnen uit je recensies naar je eigen Claude-account (gratis aan te maken). De app praat zelf met geen enkele AI-dienst.</p>
       </details>
       <details>
         <summary>Hoe werkt het ophalen van covers en synopsis?</summary>
-        <p>Bij nieuwe boeken zoekt de app op de achtergrond covers, gegevens en een korte synopsis. Dat gaat alleen door zolang de app open is.</p>
+        <p>Na een import of bij nieuwe boeken zoekt de app op de achtergrond covers, gegevens en een korte synopsis. Dat gaat alleen door zolang de app open is.</p>
         <p>Google Books beantwoordt 1.000 vragen per dag, voor alle gebruikers van deze app samen. Het werk op de achtergrond gebruikt er op jouw telefoon hooguit 150, zodat zoeken altijd blijft werken. Wat blijft liggen, gaat de volgende ochtend vanaf 9:00 of 10:00 verder.</p>
         <p>Covers van Open Library worden als plaatje op je telefoon bewaard. Covers van Google bewaart de app zo goed als het gaat, zodat ze snel verschijnen.</p>
         <p>Geen cover gevonden? Via Covers zelf nalopen zoek je per boek in Google Afbeeldingen, kopieer je het plaatje en plak je het in de app. Automatisch de eerste hit van Google gebruiken kan niet: Google biedt daar geen gratis koppeling meer voor.</p>
@@ -966,6 +1264,7 @@ function overDezeAppHtml() {
       <details>
         <summary>Hoe leren de tips?</summary>
         <p>Elke week komt er een nieuwe lijst tips; je ziet er 8 tegelijk. Tips uit de categorieën die je in je profiel koos, staan vooraan. Kies je Wil ik lezen of Al gelezen, dan komen tips uit die categorie hoger. Niet voor mij laat ze zakken. Je vijfsterrenboeken tellen een beetje mee; een boek dat je niet uitlas, zet tips van die schrijver achteraan.</p>
+        <p>Je lezersprofiel bij Over jou is voor jezelf: de tips gebruiken alleen de categorieën die je kiest en wat je met tips en boeken doet.</p>
         ${metKoboPlus() ? '<p>Omdat je Kobo Plus hebt, zie je ook de rij Nieuw in Kobo Plus. Die titels komen uit berichten van uitgevers en boekhandels; de app kan Kobo zelf niet controleren, dus kijk even in de Kobo-app.</p>' : ''}
       </details>
       <details>
@@ -979,6 +1278,12 @@ function overDezeAppHtml() {
         <p>De app is een webapp op je beginscherm: geen App Store en geen kosten. Hij werkt ook zonder internet. Je gegevens blijven van jou, en de app gebruikt alleen gratis bronnen.</p>
       </details>
     </section>`;
+}
+
+// Wie al boeken heeft, maakt eerst een backup (vandaag of gisteren) voor een import.
+function backupNodig(aantal) {
+  const dagen = dagenSindsBackup();
+  return aantal > 0 && (dagen === null || dagen > 1);
 }
 
 async function toonInstellingen() {
@@ -1005,6 +1310,21 @@ async function toonInstellingen() {
         <summary>Hoe werkt het en wat zit erin?</summary>
         <p>Je boeken staan alleen op deze telefoon. Bewaar regelmatig een backup in iCloud Drive: kies in het deelmenu <b>Bewaar in Bestanden</b>.</p>
         <div class="verhuis" id="verhuis"></div>
+      </details>
+    </section>
+
+    <section class="blok">
+      <details class="inklap">
+      <summary><h2>Excel-lijst importeren</h2></summary>
+      <p>Kies een Excel-bestand (.xlsx) met de kolommen Auteur en Titel, en eventueel Gelezen (maand), Sterren en Opmerking. Een kolom Status mag ook (Gelezen, Aan het lezen, Wil ik lezen of Niet uitgelezen). Je ziet eerst wat er wordt toegevoegd.</p>
+      ${
+        backupNodig(aantal)
+          ? '<p class="zacht">Maak eerst hierboven een backup. Dan kun je na de import altijd terug.</p>'
+          : `<label class="tweede-knop bestand-knop">Kies Excel-bestand
+               <input type="file" id="excel-bestand" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden />
+             </label>`
+      }
+      <div id="import-vak"></div>
       </details>
     </section>
 
@@ -1186,6 +1506,95 @@ async function toonInstellingen() {
     el.hidden = false;
   }
 
+  document.getElementById('excel-bestand')?.addEventListener('change', async (e) => {
+    const gekozen = e.target.files?.[0];
+    e.target.value = '';
+    if (!gekozen) return;
+    const vak = document.getElementById('import-vak');
+    vak.innerHTML = '<p class="bezig">Bestand lezen…</p>';
+    let plan;
+    try {
+      plan = planImport(await leesExcel(gekozen), await alleBoeken());
+    } catch (fout) {
+      vak.innerHTML = `<div class="waarschuwing"><p>${veilig(fout.message)}</p></div>`;
+      return;
+    }
+    const { toevoegen, bijwerken, overslaan, nietGevonden } = plan;
+    const n = toevoegen.length;
+    const m = bijwerken.length;
+    const boekTekst = (x) => (x === 1 ? '1 boek' : `${x} boeken`);
+    // Wat er bij bestaande boeken wordt aangevuld: sterren, categorie of allebei.
+    const velden = [
+      bijwerken.some((b) => b.wijzigingen.sterren) && 'sterren',
+      bijwerken.some((b) => b.wijzigingen.categorie) && 'categorie',
+      bijwerken.some((b) => b.wijzigingen.reeks || b.wijzigingen.reeksDeel || b.wijzigingen.reeksTotaal || b.wijzigingen.reeksVolgende) && 'reeks',
+    ].filter(Boolean).join(' en ').replace(/ en (?=.* en )/, ', ');
+    const knopTekst = [n && `importeer ${boekTekst(n)}`, m && `vul ${velden} aan bij ${boekTekst(m)}`].filter(Boolean).join(' en ');
+    const aanvulling = ({ sterren, categorie, reeks, reeksDeel }, al) =>
+      [
+        sterren && sterrenTekst(sterren),
+        categorie && veilig(categorie),
+        (reeks || reeksDeel) && veilig(reeksTekst({ reeks: reeks || al.reeks, reeksDeel: reeksDeel || al.reeksDeel })),
+      ]
+        .filter(Boolean)
+        .join(' · ') || 'reeks bijgewerkt';
+    vak.innerHTML = `
+      <div class="waarschuwing">
+        ${
+          n
+            ? `<p><strong>${boekTekst(n)} om toe te voegen</strong><br />
+               ${toevoegen.filter((b) => b.sterren).length} met sterren, ${toevoegen.filter((b) => b.leesdata.length).length} met leesdatum.
+               Covers en verdere gegevens worden daarna op de achtergrond opgehaald.</p>`
+            : ''
+        }
+        ${
+          m
+            ? `<details${n ? '' : ' open'}><summary><strong>Bij ${boekTekst(m)} die je al hebt, wordt ${velden === 'sterren' ? 'het aantal sterren' : velden} aangevuld</strong></summary>
+                 <ul class="overslaan">${bijwerken
+                   .map(({ al, wijzigingen }) => `<li>${veilig(al.titel)} <span class="zacht">→ ${aanvulling(wijzigingen, al)}</span></li>`)
+                   .join('')}</ul></details>`
+            : ''
+        }
+        ${
+          overslaan.length
+            ? `<details><summary>${overslaan.length} ${overslaan.length === 1 ? 'boek staat' : 'boeken staan'} al in je lijst en ${overslaan.length === 1 ? 'wordt' : 'worden'} overgeslagen</summary>
+                 <ul class="overslaan">${overslaan
+                   .map(({ boek, al }) => `<li>${veilig(boek.titel)} <span class="zacht">(al in je lijst als "${veilig(al.titel)}")</span></li>`)
+                   .join('')}</ul></details>`
+            : ''
+        }
+        ${
+          nietGevonden.length
+            ? `<details><summary>${boekTekst(nietGevonden.length)} niet gevonden in je lijst (${nietGevonden.length === 1 ? 'wordt' : 'worden'} niet toegevoegd)</summary>
+                 <ul class="overslaan">${nietGevonden
+                   .map((boek) => `<li>${veilig(boek.titel)} <span class="zacht">${veilig(auteurTekst(boek))}</span></li>`)
+                   .join('')}</ul></details>`
+            : ''
+        }
+        ${!n && !m ? '<p>Er is niets toe te voegen of bij te werken.</p>' : ''}
+        ${knopTekst ? `<button class="hoofdknop" id="importeren">${knopTekst.charAt(0).toUpperCase() + knopTekst.slice(1)}</button>` : ''}
+        <button class="link-knop" id="import-annuleer">${knopTekst ? 'Annuleren' : 'Sluiten'}</button>
+      </div>`;
+    document.getElementById('import-annuleer').addEventListener('click', () => (vak.innerHTML = ''));
+    document.getElementById('importeren')?.addEventListener('click', async (k) => {
+      k.currentTarget.disabled = true;
+      k.currentTarget.textContent = 'Bezig…';
+      try {
+        if (n) await boekenImporteren(toevoegen);
+        if (m) await boekenAanvullen(bijwerken.map(({ al, wijzigingen }) => ({ id: al.id, wijzigingen })));
+      } catch {
+        vak.innerHTML = '<div class="waarschuwing"><p>Importeren is (deels) mislukt. Kijk in je lijst wat er al bij staat, en zet zo nodig je backup terug.</p></div>';
+        return;
+      }
+      zoekterm = '';
+      location.hash = '#/';
+      melding([n && `${boekTekst(n)} toegevoegd`, m && `${velden} bij ${boekTekst(m)}`].filter(Boolean).join(', '));
+      if (n) {
+        verrijkAlles();
+        vulReeksenAan().catch(() => {});
+      }
+    });
+  });
 
   document.getElementById('backup-bestand').addEventListener('change', async (e) => {
     const gekozen = e.target.files?.[0];
@@ -2029,11 +2438,119 @@ async function toonWelkom(stap = 1) {
   window.scrollTo(0, 0);
 }
 
+// Een rij staafjes: label, staaf naar verhouding, aantal. De grootste staaf is vol.
+function stavenHtml(rijen) {
+  const max = Math.max(1, ...rijen.map((r) => r.aantal));
+  return `<ul class="staven">${rijen
+    .map(
+      (r) => `
+      <li>
+        <span class="staaf-label">${veilig(r.label)}</span>
+        <span class="staaf"><span style="width:${Math.max(2, Math.round((r.aantal / max) * 100))}%"></span></span>
+        <span class="staaf-aantal">${r.aantal}${r.extra ? ` <span class="zacht">${r.extra}</span>` : ''}</span>
+      </li>`
+    )
+    .join('')}</ul>`;
+}
+
+function maandTekst(maand, kort = false) {
+  const [j, m] = maand.split('-').map(Number);
+  return new Date(j, m - 1, 15).toLocaleDateString('nl-NL', { month: kort ? 'short' : 'long', year: 'numeric' });
+}
+
+// Een zacht leesdoel: alleen een richting, zonder streaks, meldingen of 'achter op schema'.
+function leesdoelHtml(boeken, profiel, wijzigen = false) {
+  const jaar = String(new Date().getFullYear());
+  const doel = profiel.leesdoelen?.[jaar];
+  const gelezen = jaarRapport(boeken, jaar).aantal;
+  if (!doel || wijzigen) {
+    return `
+      <section class="leesdoel" id="leesdoel">
+        <h2 class="stat-kop">Leesdoel ${jaar}</h2>
+        <p class="zacht">Geen druk, alleen een richting.</p>
+        <div class="leesdoel-invoer">
+          <input type="number" id="leesdoel-aantal" inputmode="numeric" min="1" max="999" placeholder="Bijvoorbeeld 20" value="${doel ?? ''}" />
+          <button class="keuze actief" id="leesdoel-bewaar">Bewaar</button>
+        </div>
+        ${doel ? '<button class="link-knop zacht" id="leesdoel-weg">Geen leesdoel</button>' : ''}
+      </section>`;
+  }
+  const deel = Math.min(100, Math.round((gelezen / doel) * 100));
+  return `
+    <section class="leesdoel" id="leesdoel">
+      <h2 class="stat-kop">Leesdoel ${jaar}</h2>
+      <p class="leesdoel-stand"><strong>${gelezen}</strong> van ${doel} boeken${gelezen >= doel ? ' · gehaald' : ''}</p>
+      <span class="staaf leesdoel-staaf"><span style="width:${Math.max(2, deel)}%"></span></span>
+      <button class="link-knop zacht" id="leesdoel-wijzig">Wijzig</button>
+    </section>`;
+}
+
+function statistiekenHtml(st, vanaf) {
+  const komma = (x) => x.toLocaleString('nl-NL', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const keuze = `
+    <label class="stat-vanaf">Telt vanaf
+      <input type="month" id="stat-vanaf" value="${vanaf}" max="${huidigeMaand()}" />
+    </label>`;
+  if (!st.gelezen) {
+    return `
+      <section class="statistieken" id="statistieken">
+        <h2 class="stat-kop">Je leesjaar</h2>
+        <p class="zacht">Vul bij een uitgelezen boek de datum in, dan verschijnt hier je overzicht.</p>
+        ${keuze}
+      </section>`;
+  }
+  return `
+    <section class="statistieken" id="statistieken">
+      <h2 class="stat-kop">Sinds ${maandTekst(vanaf)}</h2>
+      <div class="tegels">
+        <div class="tegel"><strong>${st.gelezen}</strong><span>gelezen</span></div>
+        <div class="tegel"><strong>${st.dezeMaand}</strong><span>deze maand</span></div>
+        <div class="tegel"><strong>${st.gemiddeld ? `${komma(st.gemiddeld)}<small>★</small>` : '–'}</strong><span>gemiddeld</span></div>
+      </div>
+      ${st.gemiddeld ? `<p class="zacht klein">Gemiddelde over ${st.metSterren} ${st.metSterren === 1 ? 'boek' : 'boeken'} met sterren.</p>` : ''}
+
+      <h2 class="stat-kop">Per maand</h2>
+      ${stavenHtml(st.perMaand.map((m) => ({ label: maandTekst(m.maand, true), aantal: m.aantal })))}
+
+      ${
+        st.perJaar.length > 1
+          ? `<h2 class="stat-kop">Per jaar</h2>
+             ${stavenHtml(st.perJaar.map((j) => ({ label: String(j.jaar), aantal: j.aantal })))}`
+          : ''
+      }
+
+      <h2 class="stat-kop">Wat je leest</h2>
+      ${stavenHtml(st.perCategorie.map((c) => ({ label: c.categorie, aantal: c.aantal, extra: c.gemiddeld ? `${komma(c.gemiddeld)}★` : '' })))}
+
+      ${
+        st.perVorm.length
+          ? `<h2 class="stat-kop">Gelezen als</h2>
+             ${stavenHtml(st.perVorm.map((v) => ({ label: LEESVORMEN[v.vorm], aantal: v.aantal })))}`
+          : ''
+      }
+
+      ${
+        st.schrijvers.length
+          ? `<h2 class="stat-kop">Schrijvers die je het vaakst las</h2>
+             ${stavenHtml(st.schrijvers.map((a) => ({ label: a.naam, aantal: a.aantal })))}`
+          : ''
+      }
+      ${keuze}
+    </section>`;
+}
+
 async function toonProfiel() {
   const nr = schermNr;
   ruimCoversOp();
   const [profiel, boeken, foto] = await Promise.all([haalProfiel(), alleBoeken(), profielFotoAdres()]);
   if (nr !== schermNr) return;
+  // De statistieken tellen vanaf de maand waarin het bijhouden begon.
+  // Nog niet gekozen: deze maand, en die keuze wordt bewaard zodat hij niet elke maand verschuift.
+  if (!geldigeStartmaand(profiel.statsVanaf)) {
+    profiel.statsVanaf = huidigeMaand();
+    await bewaarProfiel(profiel);
+    if (nr !== schermNr) return;
+  }
   const gelezen = boeken.filter((b) => b.status === 'Gelezen').length;
   app.innerHTML = `
     <header class="kop">
@@ -2055,8 +2572,37 @@ async function toonProfiel() {
         </div>
       </div>
 
+      ${statistiekenHtml(berekenStatistieken(boeken, profiel.statsVanaf), profiel.statsVanaf)}
+      ${leesdoelHtml(boeken, profiel)}
+      ${(() => {
+        // Jaar- en maandoverzichten samen: de jaren en de laatste drie maanden, de rest ingeklapt.
+        const jaren = jarenMetLezen(boeken).slice(0, 6);
+        const maanden = maandenMetLezen(boeken).slice(0, 12);
+        if (!jaren.length && !maanden.length) return '';
+        const knop = (href, tekst) => `<li><a href="${href}">${veilig(tekst)}</a></li>`;
+        return `<h2 class="stat-kop">Terugblikken</h2>
+          <ul class="analyse-maanden">${jaren.map((j) => knop(`#/jaar/${j}`, `Jaar ${j}`)).join('')}${maanden
+            .slice(0, 3)
+            .map((m) => knop(`#/analyse/${m}`, maandNaam(m)))
+            .join('')}</ul>
+          ${
+            maanden.length > 3
+              ? `<details class="uitleg"><summary>Eerdere maanden</summary>
+                   <ul class="analyse-maanden">${maanden.slice(3).map((m) => knop(`#/analyse/${m}`, maandNaam(m))).join('')}</ul>
+                 </details>`
+              : ''
+          }`;
+      })()}
+
+      <details class="inklap over-jou" id="over-jou"${profiel.naam || profiel.overMij || profiel.lezersprofiel ? '' : ' open'}>
+      <summary><h2 class="stat-kop">Over jou</h2><span class="zacht">Naam, over mij, lezersprofiel</span></summary>
+
       <label class="veld">Naam<input id="p-naam" value="${veilig(profiel.naam)}" placeholder="Je voornaam" autocomplete="given-name" /></label>
+      <label class="veld">Over mij<textarea id="p-over" rows="3" placeholder="Bijvoorbeeld wat je doet, waar en wanneer je leest">${veilig(profiel.overMij)}</textarea></label>
+      <label class="veld">Mijn lezersprofiel<textarea id="p-profiel" rows="12" placeholder="Wat lees je graag, en waarom? Welke schrijvers of thema's raken je?">${veilig(profiel.lezersprofiel)}</textarea></label>
+      <button class="link-knop" id="p-leesprofiel">✎ Maak mijn leesprofiel met Claude</button>
       <p class="opgeslagen" id="p-opgeslagen">&nbsp;</p>
+      </details>
 
       <h2 class="stat-kop">Hoe lees je?</h2>
       <div class="keuzes" id="p-vormen">${keuzeKnoppen(Object.entries(LEESVORMEN), profiel.leesvormen ?? [], 'vorm')}</div>
@@ -2078,28 +2624,60 @@ async function toonProfiel() {
     </section>
   `;
 
-  // De naam vanzelf bewaren, kort nadat je stopt met typen.
-  const naamVeld = document.getElementById('p-naam');
+  // Naam, over mij en lezersprofiel vanzelf bewaren, kort nadat je stopt met typen.
+  const velden = { naam: 'p-naam', overMij: 'p-over', lezersprofiel: 'p-profiel' };
+  // De tekstvakken groeien mee, zodat vegen over je tekst gewoon de pagina laat scrollen.
+  const groeiOver = laatMeegroeien(document.getElementById('p-over'));
+  const groeiProfiel = laatMeegroeien(document.getElementById('p-profiel'));
+  // Ingeklapt meten de vakken nul; bij openklappen opnieuw de goede hoogte.
+  document.getElementById('over-jou').addEventListener('toggle', () => {
+    groeiOver();
+    groeiProfiel();
+  });
   const opgeslagen = document.getElementById('p-opgeslagen');
   let timer;
   const bewaar = async () => {
     clearTimeout(timer);
-    const naam = naamVeld.value.trim();
-    if (naam === profiel.naam) return;
-    profiel.naam = naam;
+    const nieuw = Object.fromEntries(Object.entries(velden).map(([k, id]) => [k, document.getElementById(id).value.trim()]));
+    // Een veld dat nog nooit is ingevuld, telt als leeg (geen onnodig bewaren).
+    if (Object.keys(velden).every((k) => nieuw[k] === (profiel[k] ?? ''))) return;
+    Object.assign(profiel, nieuw);
     await bewaarProfiel(profiel);
     document.getElementById('profiel-naam-kop').textContent = profiel.naam || 'Mijn profiel';
     const letter = document.querySelector('div.profiel-groot');
     if (letter) letter.textContent = profiel.naam ? profiel.naam.charAt(0).toUpperCase() : '?';
     opgeslagen.textContent = 'Opgeslagen';
   };
-  naamVeld.addEventListener('input', () => {
-    opgeslagen.innerHTML = '&nbsp;';
-    clearTimeout(timer);
-    timer = setTimeout(bewaar, 800);
-  });
-  naamVeld.addEventListener('blur', bewaar);
+  for (const id of Object.values(velden)) {
+    const veld = document.getElementById(id);
+    veld.addEventListener('input', () => {
+      opgeslagen.innerHTML = '&nbsp;';
+      clearTimeout(timer);
+      timer = setTimeout(bewaar, 800);
+    });
+    veld.addEventListener('blur', bewaar);
+  }
   toonBoek.bewaarOpenstaand = bewaar;
+
+  // Leesprofiel: Claude schrijft het op basis van alles wat je las; het komt in het vak hierboven.
+  document.getElementById('p-leesprofiel').addEventListener('click', async () => {
+    await bewaar();
+    toonClaudeHulp({
+      kop: 'Je leesprofiel',
+      uitleg: 'Claude schrijft een profiel op basis van alles wat je las: titels, schrijvers, categorieën, sterren en een paar zinnen uit je beste recensies. Plak het hier terug; het komt in Mijn lezersprofiel.',
+      opdracht: profielOpdracht(boeken),
+      plakKnop: 'Plak het profiel van Claude',
+      opPlak: async (tekst) => {
+        const veld = document.getElementById('p-profiel');
+        if (!veld) return;
+        if (veld.value.trim() && veld.value.trim() !== tekst && !confirm('Je huidige lezersprofiel vervangen door de tekst van Claude?')) return;
+        veld.value = tekst;
+        veld.dispatchEvent(new Event('input'));
+        await bewaar();
+        melding('Lezersprofiel bijgewerkt');
+      },
+    });
+  });
 
   // Keuzes meteen bewaren: meer tegelijk (leesvorm, categorieën) of precies één (ja/nee).
   app.querySelectorAll('.profiel .keuzes').forEach((groep) =>
@@ -2134,6 +2712,41 @@ async function toonProfiel() {
     await bewaar();
     toonProfiel();
   });
+
+  // Leesdoel instellen, wijzigen of weghalen.
+  const tekenDoel = (wijzigen = false) => {
+    document.getElementById('leesdoel').outerHTML = leesdoelHtml(boeken, profiel, wijzigen);
+    koppelDoel();
+  };
+  const koppelDoel = () => {
+    const jaar = String(new Date().getFullYear());
+    document.getElementById('leesdoel-wijzig')?.addEventListener('click', () => tekenDoel(true));
+    document.getElementById('leesdoel-bewaar')?.addEventListener('click', async () => {
+      const aantal = Number(document.getElementById('leesdoel-aantal').value);
+      if (!Number.isInteger(aantal) || aantal < 1 || aantal > 999) return melding('Vul een aantal boeken in');
+      profiel.leesdoelen = { ...(profiel.leesdoelen ?? {}), [jaar]: aantal };
+      await bewaarProfiel(profiel);
+      tekenDoel();
+    });
+    document.getElementById('leesdoel-weg')?.addEventListener('click', async () => {
+      if (profiel.leesdoelen) delete profiel.leesdoelen[jaar];
+      await bewaarProfiel(profiel);
+      tekenDoel();
+    });
+  };
+  koppelDoel();
+
+  // Andere startmaand: bewaren en de cijfers opnieuw tekenen.
+  const koppelVanaf = () =>
+    document.getElementById('stat-vanaf').addEventListener('change', async (e) => {
+      const vanaf = geldigeStartmaand(e.target.value);
+      if (!vanaf || vanaf > huidigeMaand()) return;
+      profiel.statsVanaf = vanaf;
+      await bewaarProfiel(profiel);
+      document.getElementById('statistieken').outerHTML = statistiekenHtml(berekenStatistieken(boeken, vanaf), vanaf);
+      koppelVanaf();
+    });
+  koppelVanaf();
 }
 
 // --- Boekennieuws ---
@@ -3165,6 +3778,8 @@ async function route({ naarBoven = false } = {}) {
   else if (location.hash === '#/covers') toonCoversNalopen();
   else if (location.hash === '#/nieuws') toonNieuwsPagina();
   else if (location.hash === '#/kobo') toonKoboCheck();
+  else if (location.hash.startsWith('#/analyse/') && geldigeMaand(location.hash.slice('#/analyse/'.length))) toonAnalyse(location.hash.slice('#/analyse/'.length));
+  else if (location.hash.startsWith('#/jaar/') && geldigJaar(location.hash.slice('#/jaar/'.length))) toonJaar(location.hash.slice('#/jaar/'.length));
   else if (location.hash.startsWith('#/nieuws/')) {
     let id = '';
     try {

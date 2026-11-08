@@ -741,3 +741,5 @@ body.welkom-bezig .balk { display: none; }
 .blok + .blok:has(> details.inklap:not([open])), .blok + .blok:has(> .blok-link) { margin-top: 0; padding: 16px 0; }
 .blok:has(> details.inklap:not([open])) + .blok, .blok:has(> .blok-link) + .blok { margin-top: 0; }
 #backup-blok { padding-bottom: 14px; }
+
+.boek-kop-onder { margin: -2px auto 8px; max-width: 30ch; font-size: 0.95rem; line-height: 1.35; opacity: 0.75; }

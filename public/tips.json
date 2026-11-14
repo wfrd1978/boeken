@@ -1,396 +1,367 @@
 {
-  "gemaakt": "2026-11-07",
-  "ronde": "2026-week-46",
+  "gemaakt": "2026-11-14",
+  "ronde": "2026-week-47",
   "tips": [
     {
-      "id": "2026w46-verkeerde-afslag",
+      "id": "2026w47-het-andere-meisje",
       "soort": "nieuw",
-      "titel": "Verkeerde afslag",
+      "titel": "Het andere meisje",
       "auteurs": [
-        "Nicci French"
+        "Mary Kubica"
       ],
-      "isbn": "9789026370182",
+      "isbn": "9789028454651",
       "jaar": 2026,
-      "uitgever": "Ambo|Anthos",
-      "coverUrl": "https://static.unbidan.nl/covers/6f1ca45a-4c7d-4f52-b901-f52c6fad9e1c-320.jpg",
-      "reden": "Een strak geschreven misdaadroman van een vertrouwd schrijversduo, voor wie houdt van een rechercheur die niet meegaat met de makkelijkste verklaring.",
-      "synopsis": "Amy Barton wil een einde maken aan haar affaire, maar kort daarna wordt ze dood gevonden in haar huis. Voor de politie staat vast dat haar man het heeft gedaan. Rechercheur Maud O'Connor bezoekt de plaats delict en begint daar sterk aan te twijfelen.",
+      "uitgever": "Indigo",
+      "coverUrl": "https://static.unbidan.nl/covers/f9877d0d-76bd-4f3d-b25a-c7af20cedec7-320.jpg",
+      "reden": "Een spannende thriller over twee gezinnen op vakantie, voor wie houdt van verhalen waarin iedereen iets lijkt te verbergen.",
+      "synopsis": "Courtney Gray vindt tijdens een familievakantie haar broer en schoonzus dood in hun vakantiehuisje aan een meer. Hun tienerdochter Reese is spoorloos. Tijdens het onderzoek blijkt dat beide gezinnen en het stadje bij het vakantiepark geheimen hebben, en de vraag rijst of Reese slachtoffer of dader is.",
       "categorie": "Thriller & spanning"
     },
     {
-      "id": "2026w46-winterstilte",
+      "id": "2026w47-de-gevangene",
       "soort": "nieuw",
-      "titel": "Winterstilte",
+      "titel": "De gevangene",
       "auteurs": [
-        "Ragnar Jónasson",
-        "Katrín Jakobsdóttir"
+        "Freida McFadden"
       ],
-      "isbn": "9789044939743",
+      "isbn": "9789021070612",
       "jaar": 2026,
-      "uitgever": "A.W. Bruna Uitgevers",
-      "coverUrl": "https://static.unbidan.nl/covers/e32ce0e8-a37d-4543-afed-0b32d7761d42-320.jpg",
-      "reden": "Een sfeervolle IJslandse thriller in een afgelegen dorp, voor wie houdt van ijzige decors en een journalist die blijft doorvragen.",
-      "synopsis": "In februari 1989 wordt een man dood gevonden in een vervallen oud ziekenhuis aan de IJslandse oostkust. Journalist Sunna reist erheen voor een reportage, maar de dorpelingen zwijgen. Haar verslag groeit uit tot een gevaarlijk onderzoek naar de vraag of het een ongeluk was of moord.",
+      "uitgever": "LAB uitgevers",
+      "coverUrl": "https://static.unbidan.nl/covers/57e5bccb-1bd4-485c-997a-76bace22f18b-320.jpg",
+      "reden": "Een psychologische thriller van een veelgelezen bestsellerauteur, voor wie houdt van korte hoofdstukken en een verleden dat niet loslaat.",
+      "synopsis": "Brooke Sullivan gaat als verpleegkundige werken in een zwaarbeveiligde gevangenis. Daar zit Shane Nelson levenslang voor een reeks moorden. Niemand weet dat hij haar eerste liefde was en dat haar getuigenis hem achter de tralies bracht. Wat er elf jaar geleden echt gebeurde, weet alleen Shane.",
       "categorie": "Thriller & spanning"
     },
     {
-      "id": "2026w46-de-stille-patient",
+      "id": "2026w47-het-meisje-in-de",
       "soort": "parel",
-      "titel": "De stille patiënt",
+      "titel": "Het meisje in de trein",
       "auteurs": [
-        "Alex Michaelides"
+        "Paula Hawkins"
       ],
-      "isbn": "9789403142722",
-      "jaar": 2019,
-      "uitgever": "Cargo",
-      "coverUrl": "https://static.unbidan.nl/covers/73bca09e-7075-46bb-bfc9-3005067bce99-320.jpg",
-      "reden": "Een psychologische thriller die veel lezers in één ruk uitlazen, voor wie houdt van een raadsel dat pas op de laatste bladzijden opengaat.",
-      "synopsis": "Kunstenares Alicia Berenson schiet haar man dood en zegt daarna geen woord meer. Psychotherapeut Theo Faber wil haar in de psychiatrische kliniek waar ze verblijft aan het praten krijgen en ontdekken waarom ze het deed. Met die zoektocht brengt hij ook zichzelf in gevaar.",
-      "categorie": "Thriller & spanning"
-    },
-    {
-      "id": "2026w46-mussert",
-      "soort": "nieuw",
-      "titel": "Mussert",
-      "auteurs": [
-        "Auke Kok"
-      ],
-      "isbn": "9789048867059",
-      "jaar": 2026,
-      "uitgever": "Hollands Diep",
-      "coverUrl": "https://static.unbidan.nl/covers/9c438a2f-de7c-4746-a991-d1d41fd47976-320.jpg",
-      "reden": "Een levendige biografie van de NSB-leider, voor wie wil begrijpen hoe iemand stap voor stap in de verkeerde richting gaat.",
-      "synopsis": "Auke Kok volgt Anton Mussert van zijn jeugd en zijn carrière als ingenieur tot zijn collaboratie met de Duitse bezetter. Hij dook in archieven, sprak met familieleden en bezocht de plekken waar Mussert leefde en sprak. Zo ontstaat een ander beeld dan dat van het opgeblazen burgermannetje, met als sluitstuk zijn executie in 1946.",
-      "categorie": "Oorlog & geschiedenis"
-    },
-    {
-      "id": "2026w46-overlevingskunst",
-      "soort": "nieuw",
-      "titel": "Overlevingskunst",
-      "auteurs": [
-        "Diederik Oostdijk"
-      ],
-      "isbn": "9789000397556",
-      "jaar": 2026,
-      "uitgever": "Spectrum",
-      "coverUrl": "https://static.unbidan.nl/covers/cb8b4403-669e-4008-8629-0dc45e7705bc-320.jpg",
-      "reden": "Een waargebeurd en verrassend oorlogsverhaal over kunst en overleven, voor wie houdt van geschiedenis die leest als een avontuur.",
-      "synopsis": "Drie Joodse gezinnen wisten aan de Holocaust te ontkomen dankzij hun schilderijen, onder meer door verkoop aan Hitlers opkoper voor het geplande Führermuseum. Ruim tachtig jaar later reconstrueert Diederik Oostdijk wat er met de families gebeurde en welke wonderlijke reis vijf kunstwerken maakten.",
-      "categorie": "Oorlog & geschiedenis"
-    },
-    {
-      "id": "2026w46-de-nachtegaal",
-      "soort": "parel",
-      "titel": "De nachtegaal",
-      "auteurs": [
-        "Kristin Hannah"
-      ],
-      "isbn": "9789022573808",
+      "isbn": "9789036430951",
       "jaar": 2015,
-      "uitgever": "Boekerij",
-      "coverUrl": "https://static.unbidan.nl/covers/54d9ece2-0528-4466-8779-0aaf99201761-320.jpg",
-      "reden": "Een geliefde oorlogsroman over moed en zusterschap, voor wie houdt van meeslepende historische romans die lang blijven hangen.",
-      "synopsis": "De zussen Viann en Isabelle zijn heel verschillend: de een leidt een rustig leven op het Franse platteland, de ander woont in Parijs. Als de Tweede Wereldoorlog uitbreekt en Vianns man moet vechten, wordt hun band zwaar op de proef gesteld. Allebei moeten ze kiezen hoeveel ze durven te riskeren.",
+      "uitgever": "HarperCollins",
+      "coverUrl": "https://static.unbidan.nl/covers/3c4adb91-4083-4aa0-a5c0-e855c8f61dd0-320.jpg",
+      "reden": "Een van de bekendste psychologische thrillers van de afgelopen jaren, voor wie houdt van een verteller die je niet helemaal kunt vertrouwen.",
+      "synopsis": "Rachel kijkt elke ochtend vanuit de trein naar een stel dat op hun terras ontbijt, en denkt dat hun leven perfect is. Op een dag ziet ze iets vreemds in hun tuin. Als de vrouw vermist blijkt, stapt Rachel naar de politie en raakt ze steeds dieper betrokken bij de zaak.",
+      "categorie": "Thriller & spanning"
+    },
+    {
+      "id": "2026w47-het-verhaal-van-nederland",
+      "soort": "nieuw",
+      "titel": "Het verhaal van Nederland – De Tweede Wereldoorlog",
+      "auteurs": [
+        "Marchien den Hertog"
+      ],
+      "isbn": "9789046836590",
+      "jaar": 2026,
+      "uitgever": "Nieuw Amsterdam",
+      "coverUrl": "https://static.unbidan.nl/covers/eaa4cfc6-08df-43e5-964f-7f68cbda94e8-320.jpg",
+      "reden": "Een toegankelijk overzicht bij de bekende televisieserie, voor wie de oorlog in Nederland en Nederlands-Indië in één samenhangend verhaal wil lezen.",
+      "synopsis": "Dit boek bij de serie Het verhaal van Nederland vertelt over Nederland in de Tweede Wereldoorlog: de bezetting, de jodenvervolging, de bevrijding en de nasleep. Het laat zien hoe de bezetter verdeel en heers toepaste en hoe verschillend de bezetting per streek was. Ook de oorlog in Nederlands-Indië komt aan bod.",
       "categorie": "Oorlog & geschiedenis"
     },
     {
-      "id": "2026w46-dit-wordt-toch-niks",
+      "id": "2026w47-kastelen",
       "soort": "nieuw",
-      "titel": "Dit wordt toch niks",
+      "titel": "Kastelen",
       "auteurs": [
-        "Michel van Egmond"
+        "Dan Jones"
       ],
-      "isbn": "9789048879397",
+      "isbn": "9789401921374",
+      "jaar": 2026,
+      "uitgever": "Omniboek",
+      "coverUrl": "https://static.unbidan.nl/covers/5b55d076-4ba1-408a-833f-c72101717595-320.jpg",
+      "reden": "Een wereldgeschiedenis aan de hand van kastelen, voor wie houdt van levendig vertelde geschiedenis over oorlog, macht en belegeringen.",
+      "synopsis": "Van de citadel van Troje tot de ringforten van de Vikingen en de bunkers van de Maginotlinie: historicus Dan Jones vertelt ruim drieduizend jaar geschiedenis aan de hand van kastelen. Elk bolwerk laat iets zien van de veranderende oorlogsvoering, de opkomst en ondergang van rijken en het leven tijdens een belegering.",
+      "categorie": "Oorlog & geschiedenis"
+    },
+    {
+      "id": "2026w47-de-aanslag",
+      "soort": "parel",
+      "titel": "De aanslag",
+      "auteurs": [
+        "Harry Mulisch"
+      ],
+      "isbn": "9789001555078",
+      "jaar": 1982,
+      "uitgever": "De Bezige Bij",
+      "coverUrl": "https://static.unbidan.nl/covers/50293ec0-cac4-47ef-a23d-e1b66c6c9339-320.jpg",
+      "reden": "Een klassieke Nederlandse oorlogsroman die nog altijd veel gelezen wordt, voor wie houdt van een verhaal over schuld en herinnering dat lang blijft hangen.",
+      "synopsis": "Haarlem, januari 1945: een beruchte collaborerende politie-inspecteur wordt doodgeschoten voor een rijtje huizen waarin ook de familie Steenwijk woont. De gevolgen van die avond achtervolgen de dan twaalfjarige Anton Steenwijk zijn hele leven.",
+      "categorie": "Oorlog & geschiedenis"
+    },
+    {
+      "id": "2026w47-ik-wil-alleen-maar",
+      "soort": "nieuw",
+      "titel": "Ik wil alleen maar rennen",
+      "auteurs": [
+        "Lander Deweer"
+      ],
+      "isbn": "9789045053233",
+      "jaar": 2026,
+      "uitgever": "Atlas Contact",
+      "coverUrl": "https://static.unbidan.nl/covers/ea5fb040-6b5d-477d-b666-5b20564780db-320.jpg",
+      "reden": "Een persoonlijk boek over hardlopen en een vergeten pionier, voor wie zelf loopt of wil weten wat iemand blijft voortdrijven.",
+      "synopsis": "In 1974 liep Jan Knippenberg van Hoek van Holland naar Stockholm, elke dag twee marathons. Eerst werd hij gezien als zonderling, later als pionier. Lander Deweer trekt een maand naar Texel, waar Knippenberg woonde, om te begrijpen wat hem dreef, en vraagt zich af of hardlopen een sport is, een vlucht of een manier van reizen.",
+      "categorie": "Sport"
+    },
+    {
+      "id": "2026w47-gewoon-estavana",
+      "soort": "nieuw",
+      "titel": "Gewoon Estavana",
+      "auteurs": [
+        "Gerben Engelen"
+      ],
+      "isbn": "9789048869183",
       "jaar": 2026,
       "uitgever": "Inside",
-      "coverUrl": "https://static.unbidan.nl/covers/73534ecc-75bc-4064-b26b-6cdf2df2538e-320.jpg",
-      "reden": "Een geestig kijkje achter de schermen van een populaire voetbalpodcast, voor wie houdt van voetbalverhalen met humor en kleurrijke figuren.",
-      "synopsis": "Michel van Egmond neemt de lezer mee achter de schermen van de voetbalpodcast die hij maakt met Wim Kieft, René van der Gijp en Rob Jansen. Met oog voor de tragikomische kant van het bestaan portretteert hij de makers en een hele stoet sporticonen, van Johan Cruijff tot Boris Becker.",
+      "coverUrl": "https://static.unbidan.nl/covers/1e95d3ad-ec1a-4378-88d7-a16ca8224f43-320.jpg",
+      "reden": "Een openhartig portret van een van de bekendste Nederlandse sportvrouwen, voor wie wil zien wat topsport kost achter de juichmomenten.",
+      "synopsis": "Estavana Polman groeide uit tot het gezicht van het Nederlandse handbal: wereldkampioen en publiekslieveling. Dit boek volgt haar in de laatste jaren van haar loopbaan, met de druk van presteren, het moederschap en een lichaam dat steeds vaker protesteert. Steeds nadrukkelijker komt de vraag op: hoe lang nog?",
       "categorie": "Sport"
     },
     {
-      "id": "2026w46-drive",
-      "soort": "nieuw",
-      "titel": "Drive",
+      "id": "2026w47-johan-cruijff-mijn-verhaal",
+      "soort": "parel",
+      "titel": "Johan Cruijff – Mijn verhaal",
       "auteurs": [
-        "Christian Horner"
+        "Johan Cruijff"
       ],
-      "isbn": "9789402721591",
-      "jaar": 2026,
-      "uitgever": "HarperCollins",
-      "coverUrl": "https://static.unbidan.nl/covers/a3a321d8-d31c-4cf4-b0aa-dac02c13eb41-320.jpg",
-      "reden": "Het verhaal van de man die jarenlang Red Bull Racing leidde, voor wie de Formule 1 volgt en wil weten wat er achter de pitmuur gebeurt.",
-      "synopsis": "Christian Horner vertelt over zijn jeugdliefde voor snelheid, zijn tijd als coureur en zijn aanstelling als jongste teambaas in de Formule 1. Hij beschrijft de druk, de rivaliteit en de offers die nodig waren om van een klein team een wereldkampioen te maken, en zijn samenwerking met onder anderen Max Verstappen en Sebastian Vettel.",
+      "isbn": "9789046312780",
+      "jaar": 2016,
+      "uitgever": "Nieuw Amsterdam",
+      "coverUrl": "https://static.unbidan.nl/covers/97bea8b1-24ba-4adc-9133-8e30cb55cbc5-320.jpg",
+      "reden": "De autobiografie van de grootste Nederlandse voetballer, voor iedereen die van voetbal houdt of wil weten hoe Cruijff zelf naar het spel en het leven keek.",
+      "synopsis": "In zijn autobiografie vertelt Johan Cruijff zelf over zijn leven en zijn kijk op voetbal. Het is een persoonlijk boek waarin hij zijn visie geeft op alles wat hem bezighield, op het veld en daarbuiten.",
       "categorie": "Sport"
     },
     {
-      "id": "2026w46-de-renner",
-      "soort": "parel",
-      "titel": "De renner",
-      "auteurs": [
-        "Tim Krabbé"
-      ],
-      "isbn": "9789035101845",
-      "jaar": 1978,
-      "uitgever": "Prometheus",
-      "coverUrl": "https://static.unbidan.nl/covers/c9b8f6c5-0146-41a3-9ac8-b24576f4c4e5-320.jpg",
-      "reden": "Een klein klassiek boek dat vaak het beste Nederlandse sportboek wordt genoemd, ook voor wie zelf nooit op een racefiets zit.",
-      "synopsis": "Tim Krabbé beschrijft één wielerwedstrijd die hij zelf reed: de Ronde van de Mont Aigoual, een zware klimkoers in Zuid-Frankrijk in 1977. De lezer zit de hele koers in het hoofd van de renner, met alle twijfel, pijn en tactiek die daarbij horen.",
-      "categorie": "Sport"
-    },
-    {
-      "id": "2026w46-vertel-onze-kinderen",
+      "id": "2026w47-claus",
       "soort": "nieuw",
-      "titel": "Vertel onze kinderen hoeveel ik van ze hou",
+      "titel": "Claus",
       "auteurs": [
-        "Yoeri van Haaften"
+        "Jutta Chorus",
+        "Bas Blokker"
       ],
-      "isbn": "9789021065915",
+      "isbn": "9789493525320",
       "jaar": 2026,
-      "uitgever": "Luitingh Sijthoff",
-      "coverUrl": "https://static.unbidan.nl/covers/e2d3b66f-4b18-4ece-8389-1baf5a26469f-320.jpg",
-      "reden": "Een eerlijk en liefdevol verhaal over een verborgen depressie, voor wie openhartige levensverhalen waardeert die het gesprek over mentale gezondheid openen.",
-      "synopsis": "Yoeri van Haaften en Annemarie Litjens leken alles te hebben: mooie banen, een prachtig huis en twee jonge kinderen. Dan stapt Annemarie uit het leven. In haar teksten en afscheidsbrieven zoekt Yoeri naar antwoorden, en op haar verzoek schrijft hij hun verhaal op om depressie bespreekbaar te maken.",
+      "uitgever": "Uitgeverij Pluim",
+      "coverUrl": "https://static.unbidan.nl/covers/18cde5aa-f746-4ec2-960f-2c76a1f85e47-320.jpg",
+      "reden": "Een grondig onderzocht portret van de jonge prins Claus, voor wie houdt van levensverhalen die een bekend gezicht in een nieuw licht zetten.",
+      "synopsis": "Toen Claus von Amsberg in 1965 hand in hand met prinses Beatrix werd gezien, was hij al achtendertig. Hij werd geboren in de Weimarrepubliek, groeide op in Tanzania en werd volwassen in nazi-Duitsland. Jutta Chorus en Bas Blokker deden twaalf jaar onderzoek, ook in het Koninklijk Huisarchief, en reconstrueren aan de hand van onbekende brieven en dagboeken zijn jaren vóór Beatrix.",
       "categorie": "Biografie & levensverhaal"
     },
     {
-      "id": "2026w46-zwanenzang",
+      "id": "2026w47-tel-de-jaren-tel",
       "soort": "nieuw",
-      "titel": "Zwanenzang",
+      "titel": "Tel de jaren, tel de dagen",
       "auteurs": [
-        "Charles Spencer"
+        "Noraly Beyer"
       ],
-      "isbn": "9789048874002",
+      "isbn": "9789026375774",
       "jaar": 2026,
-      "uitgever": "Hollands Diep",
-      "coverUrl": "https://static.unbidan.nl/covers/93bcb358-a5de-4881-8656-358dae3553f0-320.jpg",
-      "reden": "Een persoonlijk portret van prinses Diana door haar jongere broer, voor wie houdt van levensverhalen van bekende mensen vanuit een intiem perspectief.",
-      "synopsis": "Charles Spencer vertelt over zijn jeugd met zijn zus Diana, toen ze onafscheidelijk waren, en over hoe alles veranderde toen zij trouwde met de prins van Wales. Hij beschrijft haar inzet, haar moederschap en de druk van de pers, tot aan de week van haar dood in 1997.",
+      "uitgever": "Ambo|Anthos",
+      "coverUrl": "https://static.unbidan.nl/covers/daf72a8a-5d8c-4ac8-88b4-f700c2cebdcf-320.jpg",
+      "reden": "Een warm en eerlijk memoir van een vertrouwd gezicht van het NOS Journaal, voor wie houdt van levensverhalen over liefde, verlies en ouder worden.",
+      "synopsis": "Noraly Beyer blikt terug op haar leven, dat in 1946 begon op Curaçao. Na de plotselinge dood van haar vader ging ze op haar elfde naar kostschool in Nederland. Ze werkte bij de televisie in Suriname en presenteerde na haar terugkeer jarenlang het NOS Journaal. Ook haar late liefde met Joost Prinsen en het verdriet om zijn dood komen aan bod.",
       "categorie": "Biografie & levensverhaal"
     },
     {
-      "id": "2026w46-leerschool",
+      "id": "2026w47-ik-ben-malala",
       "soort": "parel",
-      "titel": "Leerschool",
+      "titel": "Ik ben Malala",
       "auteurs": [
-        "Tara Westover"
+        "Malala Yousafzai",
+        "Christina Lamb"
       ],
-      "isbn": "9789403105703",
-      "jaar": 2018,
-      "uitgever": "De Bezige Bij",
-      "coverUrl": "https://static.unbidan.nl/covers/567cf5c3-3448-4dae-9463-2fd66bc83a7b-320.jpg",
-      "reden": "Een wereldwijd geprezen memoir over de kracht van leren, voor wie houdt van levensverhalen over doorzetten tegen alle verwachtingen in.",
-      "synopsis": "Tara Westover groeit op in een streng en geïsoleerd gezin, zonder school of dokter, en werkt al jong op de schroothoop van haar vader. Ze leert zichzelf wiskunde en grammatica en wordt toegelaten tot de universiteit. Daar begint haar ontwikkeling, maar ook het pijnlijke besef dat een breuk met haar familie onvermijdelijk is.",
-      "categorie": "Biografie & levensverhaal"
-    },
-    {
-      "id": "2026w46-oorlog-op-komst",
-      "soort": "nieuw",
-      "titel": "Oorlog op komst (of je het nu wil of niet)",
-      "auteurs": [
-        "Gideon Rachman"
-      ],
-      "isbn": "9789021345864",
-      "jaar": 2026,
-      "uitgever": "Alfabet uitgevers",
-      "coverUrl": "https://static.unbidan.nl/covers/48a8af2a-6ddd-4ef2-a82f-f4b3fc90a6b4-320.jpg",
-      "reden": "Een helder boek over de veranderende wereldorde, voor wie het nieuws over oorlogen en spanningen beter wil begrijpen.",
-      "synopsis": "Een lange periode van vrede tussen de grootmachten loopt ten einde, en wereldleiders spreken weer openlijk over een mogelijke Derde Wereldoorlog. Op basis van gesprekken met politici en veiligheidsexperts onderzoekt journalist Gideon Rachman hoe de internationale verhoudingen zo zijn ontspoord en wat ons te wachten staat.",
-      "categorie": "Journalistiek & samenleving"
-    },
-    {
-      "id": "2026w46-alfabet-van-de-onsterfelijkheid",
-      "soort": "nieuw",
-      "titel": "Alfabet van de onsterfelijkheid",
-      "auteurs": [
-        "Frank Westerman"
-      ],
-      "isbn": "9789025318093",
-      "jaar": 2026,
-      "uitgever": "Querido Fosfor",
-      "coverUrl": "https://static.unbidan.nl/covers/e37dea18-ab78-49c6-b901-159dfa3b71cd-320.jpg",
-      "reden": "Literaire non-fictie van een meesterverteller, voor wie houdt van reisverhalen die wetenschap, geschiedenis en grote levensvragen verbinden.",
-      "synopsis": "Frank Westerman gaat op zoek naar de menselijke drang naar onsterfelijkheid, langs de vier dna-letters A, C, G en T. Zijn tocht voert van het Drentse land van zijn ouders naar de gletsjer van Ötzi, de oude koning Gilgamesj en een Chinese genenbank waar men de mammoet wil terugbrengen.",
-      "categorie": "Journalistiek & samenleving"
-    },
-    {
-      "id": "2026w46-het-is-oorlog",
-      "soort": "parel",
-      "titel": "Het is oorlog maar niemand die het ziet",
-      "auteurs": [
-        "Huib Modderkolk"
-      ],
-      "isbn": "9789057598227",
-      "jaar": 2019,
-      "uitgever": "Podium",
-      "coverUrl": "https://static.unbidan.nl/covers/8c8bba28-33d7-4e68-93fb-ea64db0a3e6b-320.jpg",
-      "reden": "Onderzoeksjournalistiek die leest als een thriller, voor wie wil weten hoe kwetsbaar onze digitale wereld is.",
-      "synopsis": "Huib Modderkolk onderzocht jarenlang de schaduwkant van de digitale wereld. Hij laat zien hoe afhankelijk we zijn van technologie, hoe vijandige staten ongezien binnendringen en hoe overheden en bedrijven gegevens verzamelen. En hij vraagt hoe we ons daartegen kunnen beschermen.",
-      "categorie": "Journalistiek & samenleving"
-    },
-    {
-      "id": "2026w46-peck-peck",
-      "soort": "nieuw",
-      "titel": "Peck & Peck",
-      "auteurs": [
-        "Bonnie Garmus"
-      ],
-      "isbn": "9789049213831",
-      "jaar": 2026,
-      "uitgever": "Boekerij",
-      "coverUrl": "https://static.unbidan.nl/covers/a84d2dcd-1b3f-48e3-9db6-cb19cbdf456f-320.jpg",
-      "reden": "De nieuwe roman van de schrijver van Lessen in chemie, voor wie houdt van geestige verhalen over eigenzinnige buitenstaanders.",
-      "synopsis": "Batter Gray kiest niet voor een verstandige baan, zoals zijn klasgenoten, maar droomt van poëzie. Zijn droombaan is een plek tussen de redacteuren van het gerenommeerde tijdschrift Peck & Peck. Als hij daar eindelijk binnenkomt, moet hij op zijn eigen manier zijn weg zien te vinden.",
-      "categorie": "Roman & humor"
-    },
-    {
-      "id": "2026w46-de-correspondente",
-      "soort": "nieuw",
-      "titel": "De correspondente",
-      "auteurs": [
-        "Virginia Evans"
-      ],
-      "isbn": "9789025478964",
-      "jaar": 2026,
-      "uitgever": "Atlas Contact",
-      "coverUrl": "https://static.unbidan.nl/covers/4bbc2102-c59b-45a2-b411-8040fb373881-320.jpg",
-      "reden": "Een warme en geestige roman in brieven, voor wie houdt van verhalen over tweede kansen op latere leeftijd.",
-      "synopsis": "Sybil, een gepensioneerde advocate met een scherpe tong, schrijft elke ochtend brieven aan vrienden, haar kinderen en schrijvers die ze bewondert. Zo blikt ze terug op een leven met veel verdriet, maar ook met onverwachte wendingen. Als ze zelf anonieme brieven ontvangt, moet ze de geheimen uit haar verleden onder ogen zien.",
-      "categorie": "Roman & humor"
-    },
-    {
-      "id": "2026w46-een-man-die-ove-heet",
-      "soort": "parel",
-      "titel": "Een man die Ove heet",
-      "auteurs": [
-        "Fredrik Backman"
-      ],
-      "isbn": "9789021401942",
+      "isbn": "9789000331536",
       "jaar": 2013,
-      "uitgever": "Volt",
-      "coverUrl": "https://static.unbidan.nl/covers/e1200565-d3ba-4c8e-abb0-40eda5b26a15-320.jpg",
-      "reden": "Een komische en hartverwarmende roman over een mopperkont met een klein hart, voor wie wil lachen én ontroerd wil worden.",
-      "synopsis": "Ove is negenenvijftig, strikt en kort van stof, en vindt zijn buren idioten. Achter zijn strenge buitenkant gaat verdriet schuil. Als nieuwe overburen per ongeluk zijn brievenbus omverrijden, begint een onverwachte vriendschap.",
+      "uitgever": "Spectrum",
+      "coverUrl": "https://static.unbidan.nl/covers/93946d45-ccd0-4ef6-bc28-c14a4e7f80ba-320.jpg",
+      "reden": "Een wereldberoemd en inspirerend levensverhaal, voor wie wil lezen over moed en de strijd voor onderwijs voor iedereen.",
+      "synopsis": "Malala Yousafzai werd in 2012, op haar vijftiende, door een talibanstrijder in het gezicht geschoten omdat ze als meisje in Pakistan naar school ging. Ze overleefde de aanslag en werd het symbool van de strijd voor onderwijs. In dit boek vertelt ze zelf hoe ze opgroeide en hoe haar familie met alles omging.",
+      "categorie": "Biografie & levensverhaal"
+    },
+    {
+      "id": "2026w47-waarom-ging-je-niet",
+      "soort": "nieuw",
+      "titel": "Waarom ging je niet weg?",
+      "auteurs": [
+        "Lotte Kok"
+      ],
+      "isbn": "9789493254749",
+      "jaar": 2026,
+      "uitgever": "De Correspondent",
+      "coverUrl": "https://static.unbidan.nl/covers/55783927-64ab-45f3-a69e-5351f9011371-320.jpg",
+      "reden": "Een openhartig en scherp boek over een onzichtbare vorm van huiselijk geweld, voor wie wil begrijpen waarom weggaan zo moeilijk kan zijn.",
+      "synopsis": "Elk jaar worden in Nederland bijna 200.000 mensen slachtoffer van dwingende controle, een vorm van huiselijk geweld die draait om angst en intimidatie. Lotte Kok was een van hen. Ze beschrijft hoe je in een gevangenis belandt waarvan de buitenwereld de muren niet ziet, en waarom slachtoffers zo slecht beschermd worden.",
+      "categorie": "Journalistiek & samenleving"
+    },
+    {
+      "id": "2026w47-supermacht-europa",
+      "soort": "nieuw",
+      "titel": "Supermacht Europa",
+      "auteurs": [
+        "Thomas Huttinga"
+      ],
+      "isbn": "9789025914608",
+      "jaar": 2026,
+      "uitgever": "Ten Have",
+      "coverUrl": "https://static.unbidan.nl/covers/decbb31f-3eb0-4a0f-8a3c-7efdca403970-320.jpg",
+      "reden": "Een helder boek over de plek van Europa in de wereld, voor wie het nieuws over Amerika, Rusland en defensie beter wil kunnen plaatsen.",
+      "synopsis": "Thomas Huttinga analyseert de geopolitieke positie van Europa en laat zien hoe het continent zich stap voor stap losmaakt van oude afhankelijkheden van Amerika en Rusland. Hij behandelt thema's als AI, defensie, klimaat en de invloed van sociale media, en verbindt verleden, heden en toekomst.",
+      "categorie": "Journalistiek & samenleving"
+    },
+    {
+      "id": "2026w47-de-meeste-mensen-deugen",
+      "soort": "parel",
+      "titel": "De meeste mensen deugen",
+      "auteurs": [
+        "Rutger Bregman"
+      ],
+      "isbn": "9789082942187",
+      "jaar": 2019,
+      "uitgever": "De Correspondent",
+      "coverUrl": "https://static.unbidan.nl/covers/a50e06bc-f89e-42cf-8391-f655568e71e1-320.jpg",
+      "reden": "Een wereldwijd vertaalde bestseller die hoopvol en vlot geschreven is, voor wie eens met een andere blik naar mensen en het nieuws wil kijken.",
+      "synopsis": "Al eeuwen gaat de westerse cultuur uit van de slechtheid van de mens. Historicus Rutger Bregman vraagt zich af of we het al die tijd mis hadden, en herschrijft met veel verhalen de geschiedenis van de mens.",
+      "categorie": "Journalistiek & samenleving"
+    },
+    {
+      "id": "2026w47-orlando",
+      "soort": "nieuw",
+      "titel": "Orlando",
+      "auteurs": [
+        "Harry Whittaker"
+      ],
+      "isbn": "9789401627153",
+      "jaar": 2026,
+      "uitgever": "Xander",
+      "coverUrl": "https://static.unbidan.nl/covers/089a6cf9-01f9-48fd-87a4-5272d80260a0-320.jpg",
+      "reden": "Een sfeervolle roman in de wereld van de geliefde Zeven zussen-reeks, voor wie houdt van boekenmysteries, Dickens en verhalen die in twee tijden spelen.",
+      "synopsis": "Kent, 2009: boekhandelaar Orlando Forbes en Star D'Aplièse gaan op zoek naar een zeldzame eerste editie van A Christmas Carol van Charles Dickens. Londen, 1835: de schrijftalentvolle Eliza Wetherill komt in de uitgeverswereld terecht en ontmoet Dickens. Onderweg duiken nieuwe geheimen op over de familie D'Aplièse en Pa Salt.",
       "categorie": "Roman & humor"
     },
     {
-      "id": "2026w46-de-ongelooflijke-geschiedenis",
+      "id": "2026w47-warme-chocolademelk-op-donderdag",
       "soort": "nieuw",
-      "titel": "De ongelooflijke geschiedenis",
+      "titel": "Warme chocolademelk op donderdag",
       "auteurs": [
-        "Beatrice de Graaf",
-        "Stefan Paas",
-        "David Boogerd"
+        "Michiko Aoyama"
       ],
-      "isbn": "9789044662511",
-      "jaar": 2026,
-      "uitgever": "Prometheus",
-      "coverUrl": "https://static.unbidan.nl/covers/b3fefb37-ce0d-4255-9394-a16d9d917a7c-320.jpg",
-      "reden": "Een toegankelijke cultuurgeschiedenis van het christendom, voor gelovigen en niet-gelovigen die willen weten waar onze waarden vandaan komen.",
-      "synopsis": "Een historicus, een theoloog en een journalist laten zien hoe tweeduizend jaar christendom onze ideeën over macht, geld, gelijkwaardigheid, natuur en oorlog heeft gevormd. Het boek is gebaseerd op hun gelijknamige podcast en aangevuld met nieuwe verhalen.",
-      "categorie": "Geloof & zingeving"
-    },
-    {
-      "id": "2026w46-het-boek-der-omhelzingen",
-      "soort": "nieuw",
-      "titel": "Het boek der omhelzingen",
-      "auteurs": [
-        "Sinan Can"
-      ],
-      "isbn": "9789049215279",
+      "isbn": "9789049214845",
       "jaar": 2026,
       "uitgever": "Meulenhoff",
-      "coverUrl": "https://static.unbidan.nl/covers/0f96e501-b702-43c1-863a-10b82fee6f70-320.jpg",
-      "reden": "Een bundel troostrijke verhalen van een bekende documentairemaker, voor wie houdt van bezinning en hoop in woelige tijden.",
-      "synopsis": "In veertig korte verhalen, geordend naar de seizoenen, verbindt Sinan Can het alledaagse met het tijdloze. Hij put uit eigen ervaringen en uit verhalen, tradities en inzichten uit het Midden-Oosten en daarbuiten.",
+      "coverUrl": "https://static.unbidan.nl/covers/648bdad6-7940-4602-8bfa-49927a028555-320.jpg",
+      "reden": "Een kleine, warme Japanse roman in losse verhalen, voor wie houdt van feelgood waarin gewone mensen elkaar zonder het te weten verder helpen.",
+      "synopsis": "In het Marble Café in Tokio schrijft een vrouw brieven aan haar vaste tafeltje, terwijl een jonge barista haar warme chocolademelk maakt. Het boek verbindt twaalf momenten uit het leven van gasten en medewerkers van het café. Samen laten ze zien dat kleine woorden en gebaren een groot verschil kunnen maken.",
+      "categorie": "Roman & humor"
+    },
+    {
+      "id": "2026w47-de-100-jarige-man-die",
+      "soort": "parel",
+      "titel": "De 100-jarige man die uit het raam klom en verdween",
+      "auteurs": [
+        "Jonas Jonasson"
+      ],
+      "isbn": "9789036427722",
+      "jaar": 2011,
+      "uitgever": "Signatuur",
+      "coverUrl": "https://static.unbidan.nl/covers/fbc6e501-9c93-42a3-bb0d-8f1178f4f003-320.jpg",
+      "reden": "Een vrolijke en absurde avonturenroman die wereldwijd miljoenen lezers aan het lachen maakte, voor wie zin heeft in iets luchtigs met vaart.",
+      "synopsis": "Op zijn honderdste verjaardag klimt Allan uit het raam van het bejaardentehuis en verdwijnt. Een koffer vol maffiageld zorgt voor wilde achtervolgingen, en onderweg verzamelt hij een bonte club figuren. Tussendoor komen de opvallende momenten uit zijn leven en uit de twintigste-eeuwse geschiedenis voorbij.",
+      "categorie": "Roman & humor"
+    },
+    {
+      "id": "2026w47-terug-naar-de-hut",
+      "soort": "nieuw",
+      "titel": "Terug naar de hut",
+      "auteurs": [
+        "William Paul Young"
+      ],
+      "isbn": "9789029740609",
+      "jaar": 2026,
+      "uitgever": "KokBoekencentrum",
+      "coverUrl": "https://static.unbidan.nl/covers/a70dc531-e50c-43c6-b2ae-a96bf43ead6a-320.jpg",
+      "reden": "Het vervolg op de wereldwijde bestseller De uitnodiging, voor wie houdt van spirituele romans over verlies, vergeving en hoop.",
+      "synopsis": "Tien jaar na de dood van zijn jongste dochter keert Mack terug naar de hut waar hij God ontmoette. Het verlies werkt nog altijd door in zijn huwelijk en zijn geloof. Als de moordenaar van zijn dochter vraagt twaalf uur met hem door te brengen, staat Mack voor een ondenkbare keuze.",
       "categorie": "Geloof & zingeving"
     },
     {
-      "id": "2026w46-eindelijk-thuis",
-      "soort": "parel",
-      "titel": "Eindelijk thuis",
+      "id": "2026w47-zoekruimte",
+      "soort": "nieuw",
+      "titel": "Zoekruimte",
       "auteurs": [
-        "Henri Nouwen"
+        "Philip Troost"
       ],
-      "isbn": "9789020919646",
-      "jaar": 1996,
-      "uitgever": "Lannoo",
-      "coverUrl": "https://static.unbidan.nl/covers/91d3fa75-3241-4030-a9bf-dd6b251153ae-320.jpg",
-      "reden": "Een geliefde klassieker over vergeving en thuiskomen, voor wie houdt van geloofsboeken die persoonlijk en beeldend zijn.",
-      "synopsis": "Een toevallige ontmoeting met Rembrandts schilderij De terugkeer van de verloren zoon zette priester Henri Nouwen aan het denken. Vanuit zijn eigen ervaringen beschrijft hij de gevoelens van de vader, de oudste zoon en de jongste zoon uit de gelijkenis.",
+      "isbn": "9789043545716",
+      "jaar": 2026,
+      "uitgever": "KokBoekencentrum",
+      "coverUrl": "https://static.unbidan.nl/covers/613dc9da-fb93-4abd-aa53-d7feaa8fa54b-320.jpg",
+      "reden": "Een persoonlijk en rustig boek over zoeken in je geloof, voor wie zich niet meer helemaal thuis voelt in vaste opvattingen maar het geloof niet wil loslaten.",
+      "synopsis": "Psychotherapeut en pastoraal werker Philip Troost beschrijft zijn geloofsreis langs klassieke christelijke leerstukken en vrijzinnigheid. Hij zoekt ruimte om geloof en traditie opnieuw te doordenken, als houvast voor wie zoekt naar een eigentijds begrip van het geloof.",
       "categorie": "Geloof & zingeving"
     },
     {
-      "id": "2026w46-de-laatste-gondel",
-      "soort": "nieuw",
-      "titel": "De laatste gondel",
-      "auteurs": [
-        "Jan Brokken"
-      ],
-      "isbn": "9789045054520",
-      "jaar": 2026,
-      "uitgever": "Atlas Contact",
-      "coverUrl": "https://static.unbidan.nl/covers/1388828b-5866-4e1e-bfde-ed81309a9e09-320.jpg",
-      "reden": "Een sfeervol portret van Venetië en de kunstenaars die er hun hart verloren, voor wie houdt van reizen, muziek en cultuur.",
-      "synopsis": "Jan Brokken komt al zijn hele leven in Venetië. Hij volgt de sporen van onder anderen Diaghilev, Stravinsky en Brodsky, die er niet alleen inspiratie vonden maar er ook begraven werden. Zo zoekt hij naar wat de stad tot dé kunstenaarsstad maakt.",
-      "categorie": "Overig"
-    },
-    {
-      "id": "2026w46-droom",
-      "soort": "nieuw",
-      "titel": "Droom",
-      "auteurs": [
-        "Merijn van de Laar"
-      ],
-      "isbn": "9789465520476",
-      "jaar": 2026,
-      "uitgever": "UvNL.Press",
-      "coverUrl": "https://static.unbidan.nl/covers/33ce90a1-2a46-4e4e-96a6-57a97f472d2f-320.jpg",
-      "reden": "Een toegankelijk en praktisch boek over wat je brein 's nachts doet, voor nieuwsgierige lezers die beter willen slapen en dromen.",
-      "synopsis": "Neuropsycholoog en slaaptherapeut Merijn van de Laar legt uit hoe dromen ontstaan en hoe ze helpen om de dag te verwerken en herinneringen te ordenen. Met oefeningen leer je dromen beter te onthouden, nachtmerries te herschrijven en stress in dromen te herkennen.",
-      "categorie": "Overig"
-    },
-    {
-      "id": "2026w46-het-verborgen-leven-van-bomen",
+      "id": "2026w47-de-zin-van-het",
       "soort": "parel",
-      "titel": "Het verborgen leven van bomen",
+      "titel": "De zin van het bestaan",
       "auteurs": [
-        "Peter Wohlleben"
+        "Viktor Frankl"
       ],
-      "isbn": "9789044975079",
-      "jaar": 2016,
-      "uitgever": "Lev.",
-      "coverUrl": "https://static.unbidan.nl/covers/c2a7ec19-c4f0-4902-b42b-f8c126ad14b6-320.jpg",
-      "reden": "Een verwonderlijk boek over het bos dat een wereldwijde bestseller werd, voor iedereen die graag wandelt en met andere ogen naar bomen wil kijken.",
-      "synopsis": "Boswachter Peter Wohlleben vertelt hoe bomen met elkaar communiceren en voor hun nakomelingen en zieke buren zorgen. Hij combineert wetenschappelijke inzichten met zijn eigen ervaringen in het bos.",
+      "isbn": "9789061001737",
+      "jaar": 1946,
+      "uitgever": "Ad. Donker",
+      "coverUrl": "https://static.unbidan.nl/covers/0543af4e-c0e2-4335-acf5-9d1909d622b0-320.jpg",
+      "reden": "Een klassieker over zingeving die al generaties lezers houvast geeft, voor wie wil nadenken over hoe je met tegenslag omgaat.",
+      "synopsis": "Viktor Frankl vond in het concentratiekamp de kracht om te overleven. Vanuit die ervaring schrijft hij over zingeving en over hoe mensen met tegenslag kunnen omgaan.",
+      "categorie": "Geloof & zingeving"
+    },
+    {
+      "id": "2026w47-de-missie",
+      "soort": "nieuw",
+      "titel": "De missie",
+      "auteurs": [
+        "Lucas Ellerbroek"
+      ],
+      "isbn": "9789035144330",
+      "jaar": 2026,
+      "uitgever": "Prometheus",
+      "coverUrl": "https://static.unbidan.nl/covers/525ab866-2d75-4a7a-9446-05b8f3b39ae4-320.jpg",
+      "reden": "Een menselijk en vlot verteld boek over ruimtevaart, voor wie graag naar de sterren kijkt en wil weten wie de mensen achter de missies waren.",
+      "synopsis": "Waarom willen mensen eigenlijk de ruimte in? Sterrenkundige Lucas Ellerbroek volgt een eeuw ruimtevaart via de mensen die haar vormgaven, van Jules Verne tot André Kuipers. Zo ontstaat een mozaïek van persoonlijke missies vol nieuwsgierigheid, ambitie en verbeeldingskracht.",
       "categorie": "Overig"
     },
     {
-      "id": "2026w46-kp-vastpakken-is-het-nieuwe-loslaten",
-      "soort": "koboplus",
-      "titel": "Vastpakken is het nieuwe loslaten",
+      "id": "2026w47-het-geheim-van-de",
+      "soort": "nieuw",
+      "titel": "Het geheim van de pratende machine",
       "auteurs": [
-        "Roos Woltering"
+        "Antal van den Bosch"
       ],
-      "isbn": "9789044936742",
+      "isbn": "9789044658750",
       "jaar": 2026,
-      "uitgever": "Lev.",
-      "coverUrl": "https://static.unbidan.nl/covers/3f049a6b-815a-43ba-8cf2-cb01a1f784fe-320.jpg",
-      "reden": "Volgens uitgeverij A.W. Bruna nieuw in Kobo Plus en Storytel (oktober 2026).",
+      "uitgever": "Prometheus",
+      "coverUrl": "https://static.unbidan.nl/covers/a89c0e13-c559-4feb-9866-d71443dddb30-320.jpg",
+      "reden": "Een toegankelijke uitleg over chatbots en kunstmatige intelligentie, voor iedereen die ze gebruikt of erover hoort en wil snappen wat er echt gebeurt.",
+      "synopsis": "Chatbots lijken te denken, maar voorspellen in werkelijkheid woord voor woord wat er zou kunnen volgen, zonder te begrijpen wat ze zeggen. Hoogleraar Antal van den Bosch legt uit hoe ze werken, welke ontwikkelingen sinds de Tweede Wereldoorlog eraan voorafgingen en waarom we ons zo makkelijk laten misleiden.",
       "categorie": "Overig"
     },
     {
-      "id": "2026w46-kp-reset-je-energie",
-      "soort": "koboplus",
-      "titel": "Reset je energie",
+      "id": "2026w47-feitenkennis",
+      "soort": "parel",
+      "titel": "Feitenkennis",
       "auteurs": [
-        "Lina Ejlertsson"
+        "Hans Rosling"
       ],
-      "isbn": "9789044939637",
-      "jaar": 2026,
-      "uitgever": "Lev.",
-      "coverUrl": "https://static.unbidan.nl/covers/37fb8abb-201c-4c41-9174-dd5b58db9fcc-320.jpg",
-      "reden": "Volgens uitgeverij A.W. Bruna nieuw in Kobo Plus en Storytel (oktober 2026).",
+      "isbn": "9789000351220",
+      "jaar": 2018,
+      "uitgever": "Spectrum",
+      "coverUrl": "https://static.unbidan.nl/covers/051fd159-1215-41b6-ac7a-b64818960fb0-320.jpg",
+      "reden": "Een geliefde bestseller die je anders naar de wereld laat kijken, voor wie benieuwd is waarom het vaak beter gaat dan we denken.",
+      "synopsis": "Bij vragen over wereldwijde trends geven we volgens Hans Rosling stelselmatig de verkeerde antwoorden. Hij legt aan de hand van tien redenen uit hoe dat komt: we weten niet wat we niet weten. Met anekdotes en zijn bekende grafieken laat hij zien dat de wereld er beter voor staat dan we denken.",
       "categorie": "Overig"
     }
   ],
